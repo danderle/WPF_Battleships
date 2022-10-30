@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Battleships;
@@ -21,6 +22,7 @@ internal partial class MainMenuViewModel : ObservableObject
 	#region Properties
 
 	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(ConnectToServerCommand))]
 	private string username;
 
     [ObservableProperty]
@@ -32,6 +34,15 @@ internal partial class MainMenuViewModel : ObservableObject
 
     [ObservableProperty]
     private bool challenged;
+
+    [ObservableProperty]
+    private bool waitingForChallengeAnswer;
+
+    [ObservableProperty]
+    private bool deniedChallenge;
+
+    [ObservableProperty]
+    private bool openChallenge;
 
     public ObservableCollection<UserViewModel> Users { get; set; } = new ObservableCollection<UserViewModel>();
 
@@ -45,6 +56,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		BindingOperations.EnableCollectionSynchronization(Users, _lock);
 		_clientToServer.ConnectedAction = NewConnection;
 		_clientToServer.ChallengePlayerAction = ChallengedByPlayer;
+		_clientToServer.ChallengeAnswerAction = ChallengeAnswer;
     }
 
 	#endregion
@@ -76,7 +88,29 @@ internal partial class MainMenuViewModel : ObservableObject
 	{
 		ChallengeMessage msg = JsonSerializer.Deserialize<ChallengeMessage>(message);
 		Challenged = true;
-		Opponent = Users.FirstOrDefault(user => user.Name == msg.Challenger);
+		Application.Current.Dispatcher.BeginInvoke(() =>
+		{
+			Opponent = Users.FirstOrDefault(user => user.Name == msg.Challenger);
+		});
+
+		Challenged = true;
+    }
+
+    private void ChallengeAnswer(string message)
+    {
+		ChallengeAnswerMessage msg = JsonSerializer.Deserialize<ChallengeAnswerMessage>(message);
+
+		if (msg.Accept)
+		{
+			Opponent = Users.FirstOrDefault( user => user.Name == msg.Defender);
+			//Todo switch page
+		}
+		else
+		{
+			DeniedChallenge = true;
+		}
+
+		WaitingForChallengeAnswer = false;
     }
 
     #endregion
@@ -100,6 +134,8 @@ internal partial class MainMenuViewModel : ObservableObject
     {
 		var message = JsonSerializer.Serialize(new ChallengeMessage(Username, Opponent.Name));
 		_clientToServer.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
+		WaitingForChallengeAnswer = true;
+		OpenChallenge = true;
     }
 
 	private bool CanChallenge()
@@ -110,11 +146,23 @@ internal partial class MainMenuViewModel : ObservableObject
 	[RelayCommand]
     private void Accept()
     {
+		var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
+		_clientToServer.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
     }
 
     [RelayCommand]
     private void Deny()
     {
+        var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, false));
+        _clientToServer.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+		Challenged = false;
+    }
+
+    [RelayCommand]
+    private void Ok()
+    {
+		DeniedChallenge = false;
+		OpenChallenge = false;
     }
 
     #endregion

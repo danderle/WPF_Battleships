@@ -15,6 +15,7 @@ public class ClientToServer
 
     public Action<string> ConnectedAction;
     public Action<string> ChallengePlayerAction;
+    public Action<string> ChallengeAnswerAction;
 
     public ClientToServer()
     {
@@ -53,6 +54,9 @@ public class ClientToServer
                         break;
                     case OpCodes.ChallengePlayer:
                         ChallengePlayerAction?.Invoke(message);
+                        break;
+                    case OpCodes.ChallengeAnswer:
+                        ChallengeAnswerAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();

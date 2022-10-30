@@ -13,7 +13,7 @@
         <TextBlock Text="Enter a username" 
                         HorizontalAlignment="Left"
                         Style="{StaticResource RegularText}"/>
-        <TextBox Text="{Binding Username}" 
+        <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
                         Style="{StaticResource BaseTextBox}"
                         MinWidth="150"/>
 

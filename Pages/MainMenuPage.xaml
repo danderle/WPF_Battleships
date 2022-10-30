@@ -38,7 +38,16 @@
                                           DataContext="{Binding}"
                                           Visibility="{Binding Challenged, Converter={local:BoolToVisibilityConverter}}"/>
 
-            <local:UsersListControl Grid.Column="1"  DataContext="{Binding Users}" />
+            <local:WaitingChallengeControl Grid.Row="1"
+                                           DataContext="{Binding}"
+                                           Visibility="{Binding OpenChallenge, Converter={local:BoolToVisibilityConverter}}"/>
+
+            <local:UsersListControl Grid.Column="1"  
+                                    DataContext="{Binding}" />
+
+            <Border Grid.Column="1"
+                    Background="Transparent"
+                    Visibility="{Binding Challenged, Converter={local:BoolToVisibilityConverter}}"/>
         </Grid>
     </Grid>
 </Page>
