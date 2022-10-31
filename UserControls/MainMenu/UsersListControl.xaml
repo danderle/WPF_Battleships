@@ -13,8 +13,18 @@
               SelectedValue="{Binding Opponent}">
         <ListView.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding Name}" 
-                           Style="{StaticResource BaseText}"/>
+                <TextBlock Text="{Binding Name}"
+                           FontSize="{StaticResource FontSizeRegular}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsBusy}" Value="true">
+                                    <Setter Property="Foreground" Value="{StaticResource OrangeBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>

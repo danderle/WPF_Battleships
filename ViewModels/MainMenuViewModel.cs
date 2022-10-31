@@ -57,11 +57,19 @@ internal partial class MainMenuViewModel : ObservableObject
 		_clientToServer.ConnectedAction = NewConnection;
 		_clientToServer.ChallengePlayerAction = ChallengedByPlayer;
 		_clientToServer.ChallengeAnswerAction = ChallengeAnswer;
+		_clientToServer.BusyAction = Busy;
     }
-
 	#endregion
 
 	#region Server actions
+
+
+	private void Busy(string message)
+	{
+		User user = JsonSerializer.Deserialize<User>(message);
+		var update = Users.FirstOrDefault(item => item.Name == user.Name);
+		update.IsBusy = user.IsBusy;
+	}
 
 	private void NewConnection(string newUsername)
 	{
@@ -91,9 +99,11 @@ internal partial class MainMenuViewModel : ObservableObject
 		Application.Current.Dispatcher.BeginInvoke(() =>
 		{
 			Opponent = Users.FirstOrDefault(user => user.Name == msg.Challenger);
+			Opponent.IsBusy = true;
 		});
 
 		Challenged = true;
+		Users.FirstOrDefault(user => user.Name == Username).IsBusy = true;
     }
 
     private void ChallengeAnswer(string message)
@@ -136,11 +146,23 @@ internal partial class MainMenuViewModel : ObservableObject
 		_clientToServer.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
 		WaitingForChallengeAnswer = true;
 		OpenChallenge = true;
+     
+		var user = Users.FirstOrDefault(user => user.Name == Username);
+		user.IsBusy = true;
+
+		var u = new User()
+		{
+			Name = user.Name,
+			IsBusy = user.IsBusy
+		};
+
+		message = JsonSerializer.Serialize(u);
+		_clientToServer.CreateAndSendPacket(OpCodes.Busy, message);
     }
 
-	private bool CanChallenge()
+    private bool CanChallenge()
 	{
-		return Opponent != null && Opponent.Name != Username;
+		return Opponent != null && Opponent.Name != Username && !Opponent.IsBusy;
 	}
 
 	[RelayCommand]

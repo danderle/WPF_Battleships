@@ -10,10 +10,8 @@
 
     <StackPanel HorizontalAlignment="Center"
                 Background="{StaticResource BlackBrush}">
-        <TextBlock Text="Enter a username" 
-                        HorizontalAlignment="Left"
-                        Style="{StaticResource RegularText}"/>
         <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
+                 Tag="Enter a username"
                         Style="{StaticResource BaseTextBox}"
                         MinWidth="150"/>
 

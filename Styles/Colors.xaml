@@ -15,7 +15,7 @@
     <SolidColorBrush x:Key="RoyalBlueBrush" Color="{StaticResource RoyalBlue}" />
 
     <Color x:Key="MediumBlue">#236fc5</Color>
-    <SolidColorBrush x:Key="MediumBrush" Color="{StaticResource MediumBlue}" />
+    <SolidColorBrush x:Key="MediumBlueBrush" Color="{StaticResource MediumBlue}" />
 
     <Color x:Key="LightBlue">#1692c4</Color>
     <SolidColorBrush x:Key="LightBlueBrush" Color="{StaticResource LightBlue}" />

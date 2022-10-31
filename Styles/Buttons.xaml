@@ -2,15 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="BaseButton" TargetType="{x:Type Button}">
-        <Setter Property="Background" Value="Black"/>
-        <Setter Property="BorderBrush" Value="{StaticResource DarkGreenBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource DarkGreenBrush}"/>
+        <Setter Property="Background" Value="{StaticResource MediumBlueBrush}"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkGreyBrush}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}" />
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Margin" Value="10 15"/>
+        <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Padding" Value="40 15"/>
-        <Setter Property="Margin" Value="10 40"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -36,14 +36,14 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation Duration="0:0:0.3" 
-                                                    To="{StaticResource DarkGreen}"
+                                                    To="{StaticResource LightBlue}"
                                                     Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"/>
                                 </Storyboard>
                             </BeginStoryboard>
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation Duration="0:0:0.3" 
-                                                    To="Black"
+                                                    To="{StaticResource Black}"
                                                     Storyboard.TargetName="Text"
                                                     Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"/>
                                 </Storyboard>
@@ -53,14 +53,14 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation Duration="0:0:0.3" 
-                                                    To="Black"
+                                                    To="{StaticResource MediumBlue}"
                                                     Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"/>
                                 </Storyboard>
                             </BeginStoryboard>
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation Duration="0:0:0.3" 
-                                                    To="{StaticResource DarkGreen}"
+                                                    To="{StaticResource DarkGrey}"
                                                     Storyboard.TargetName="Text"
                                                     Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"/>
                                 </Storyboard>
