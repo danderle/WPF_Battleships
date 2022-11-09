@@ -113,9 +113,9 @@ internal partial class MainMenuViewModel : ObservableObject
 		if (msg.Accept)
 		{
 			Opponent = Users.FirstOrDefault( user => user.Name == msg.Defender);
-			//Todo switch page
-		}
-		else
+            Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
+        }
+        else
 		{
 			DeniedChallenge = true;
 		}
@@ -170,6 +170,8 @@ internal partial class MainMenuViewModel : ObservableObject
     {
 		var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
 		_clientToServer.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+
+		Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
     }
 
     [RelayCommand]
