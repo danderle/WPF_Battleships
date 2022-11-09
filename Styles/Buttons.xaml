@@ -4,7 +4,7 @@
     <Style x:Key="BaseButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{StaticResource MediumBlueBrush}"/>
         <Setter Property="BorderBrush" Value="Black"/>
-        <Setter Property="Foreground" Value="{StaticResource DarkGreyBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}"/>
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}" />
         <Setter Property="Margin" Value="10 15"/>
         <Setter Property="BorderThickness" Value="2"/>
@@ -60,7 +60,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation Duration="0:0:0.3" 
-                                                    To="{StaticResource DarkGrey}"
+                                                    To="{StaticResource DarkGray}"
                                                     Storyboard.TargetName="Text"
                                                     Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"/>
                                 </Storyboard>

@@ -24,9 +24,12 @@
     <Color x:Key="Black">#151818</Color>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
 
-    <Color x:Key="DarkGrey">#313131</Color>
-    <SolidColorBrush x:Key="DarkGreyBrush" Color="{StaticResource DarkGrey}" />
+    <Color x:Key="DarkGray">#313131</Color>
+    <SolidColorBrush x:Key="DarkGrayBrush" Color="{StaticResource DarkGray}" />
 
+    <Color x:Key="LightGray">#414141</Color>
+    <SolidColorBrush x:Key="LightGrayBrush" Color="{StaticResource LightGray}" />
+    
     <Color x:Key="Orange">#f28f1c</Color>
     <SolidColorBrush x:Key="OrangeBrush" Color="{StaticResource Orange}" />
 

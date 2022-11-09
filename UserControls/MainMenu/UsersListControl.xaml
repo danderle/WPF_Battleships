@@ -7,11 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <ListView ItemsSource="{Binding Users}"
-              Background="{StaticResource BlackBrush}"
-              MinWidth="120"
-              SelectedValue="{Binding Opponent}">
-        <ListView.ItemTemplate>
+    <ListBox ItemsSource="{Binding Users}"
+             MinWidth="120"
+             SelectedValue="{Binding Opponent}"
+             Style="{StaticResource ListBoxBase}"
+             ItemContainerStyle="{StaticResource ListBoxItemBase}">
+        <ListBox.ItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding Name}"
                            FontSize="{StaticResource FontSizeRegular}">
@@ -26,7 +27,7 @@
                     </TextBlock.Style>
                 </TextBlock>
             </DataTemplate>
-        </ListView.ItemTemplate>
-    </ListView>
+        </ListBox.ItemTemplate>
+    </ListBox>
     
 </UserControl>
