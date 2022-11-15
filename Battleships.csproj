@@ -10,6 +10,11 @@
   <ItemGroup>
     <None Remove=".gitattributes" />
     <None Remove=".gitignore" />
+    <None Remove="Resources\Images\Battleship.jpg" />
+    <None Remove="Resources\Images\Carrier.jpg" />
+    <None Remove="Resources\Images\Cruiser.jpg" />
+    <None Remove="Resources\Images\Destroyer.jpg" />
+    <None Remove="Resources\Images\Submarine.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +27,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Images\Battleship.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Carrier.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Cruiser.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Destroyer.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Submarine.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Pages\ShipPlacementPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\ShipControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\ShipGrid.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UserControls\MainMenu\WaitingChallengeControl.xaml.cs">
@@ -53,6 +82,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\Texts.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ShipControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ShipGrid.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

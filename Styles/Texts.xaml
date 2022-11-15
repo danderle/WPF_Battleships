@@ -18,6 +18,10 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <Style TargetType="{x:Type TextBlock}" x:Key="SmallText" BasedOn="{StaticResource BaseText}">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+    </Style>
+
     <Style TargetType="{x:Type TextBlock}" x:Key="LargeText" BasedOn="{StaticResource BaseText}">
         <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
     </Style>

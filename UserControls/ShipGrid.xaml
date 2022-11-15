@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="Battleships.ShipGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:Battleships"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!--12345678910-->
+        <ItemsControl Grid.Column="1">
+            <ItemsControl.ItemsSource>
+                <x:Array Type="{x:Type sys:String}">
+                    <sys:String>1</sys:String>
+                    <sys:String>2</sys:String>
+                    <sys:String>3</sys:String>
+                    <sys:String>4</sys:String>
+                    <sys:String>5</sys:String>
+                    <sys:String>6</sys:String>
+                    <sys:String>7</sys:String>
+                    <sys:String>8</sys:String>
+                    <sys:String>9</sys:String>
+                    <sys:String>10</sys:String>
+                </x:Array>
+            </ItemsControl.ItemsSource>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="10" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="40"
+                                Width="40"
+                                BorderBrush="{StaticResource LightGrayBrush}"
+                                BorderThickness="0.5">
+                        <TextBlock Text="{Binding}"
+                                       Style="{StaticResource SmallText}" />
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--abcdefghij-->
+        <ItemsControl Grid.Row="1">
+            <ItemsControl.ItemsSource>
+                <x:Array Type="{x:Type sys:String}">
+                    <sys:String>A</sys:String>
+                    <sys:String>B</sys:String>
+                    <sys:String>C</sys:String>
+                    <sys:String>D</sys:String>
+                    <sys:String>E</sys:String>
+                    <sys:String>F</sys:String>
+                    <sys:String>G</sys:String>
+                    <sys:String>H</sys:String>
+                    <sys:String>I</sys:String>
+                    <sys:String>J</sys:String>
+                </x:Array>
+            </ItemsControl.ItemsSource>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="10" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="40"
+                                Width="40"
+                                BorderBrush="{StaticResource LightGrayBrush}"
+                                BorderThickness="0.5">
+                        <TextBlock Text="{Binding}"
+                                       Style="{StaticResource SmallText}" />
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--Water background-->
+        <Grid Grid.Row="1"
+              Grid.Column="1">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0 0"
+                                         EndPoint="1 1">
+                    <GradientStop Color="{StaticResource DarkBlue}" Offset="0" />
+                    <GradientStop Color="{StaticResource LightBlue}" Offset="0.2" />
+                    <GradientStop Color="{StaticResource RoyalBlue}" Offset="0.5" />
+                    <GradientStop Color="{StaticResource MediumBlue}" Offset="0.6" />
+                    <GradientStop Color="{StaticResource LightBlue}" Offset="0.8" />
+                    <GradientStop Color="{StaticResource DarkBlue}" Offset="1" />
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>
+
+        <!--Game Field-->
+        <ItemsControl Grid.Row="1"
+                      Grid.Column="1"
+                      ItemsSource="{Binding Ships}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Width="400"
+                            Height="400">
+                        <Canvas.Background>
+                            <DrawingBrush TileMode="Tile" Viewport="0 0 40 40" ViewportUnits="Absolute">
+                                <DrawingBrush.Drawing>
+                                    <GeometryDrawing>
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="40 40 40 40" />
+                                        </GeometryDrawing.Geometry>
+                                        <GeometryDrawing.Pen>
+                                            <Pen Brush="{StaticResource LightGrayBrush}" Thickness="0.5"/>
+                                        </GeometryDrawing.Pen>
+                                    </GeometryDrawing>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Canvas.Background>
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding Xpos}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Ypos}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:ShipControl DataContext="{Binding }"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+
+</UserControl>

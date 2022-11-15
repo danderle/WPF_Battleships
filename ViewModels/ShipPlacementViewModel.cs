@@ -5,7 +5,7 @@ namespace Battleships
     public partial class ShipPlacementViewModel : ObservableObject
     {
         [ObservableProperty]
-        private ApplicationPages currentPage = ApplicationPages.MainMenuPage;
+        private ShipGridViewModel shipGrid = new ShipGridViewModel();
 
         public ShipPlacementViewModel()
         {
