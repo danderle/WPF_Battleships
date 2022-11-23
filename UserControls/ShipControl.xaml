@@ -10,7 +10,8 @@
 
     <Grid>
         <Rectangle Width="{Binding Width}"
-                   Height="40">
+                   Height="40"
+                   local:DragElement.Value="true">
             <Rectangle.Fill>
                 <ImageBrush ImageSource="{Binding ShipType, Converter={local:ShipTypeToImageSourceConverter}}" />
             </Rectangle.Fill>

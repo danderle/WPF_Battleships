@@ -1,10 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Battleships;
 
 public partial class ShipViewModel : ObservableObject
 {
 	#region Properties
+
+	private readonly int SingleSquareSize = 40;
+
+	private int _size = 0;
 
 	[ObservableProperty]
 	private double width;
@@ -18,11 +23,15 @@ public partial class ShipViewModel : ObservableObject
     [ObservableProperty]
 	private ShipTypes shipType;
 
-	#endregion
+    [ObservableProperty]
+    private ShipAlignment alignment;
 
-	#region Constructor
 
-	public ShipViewModel()
+    #endregion
+
+    #region Constructor
+
+    public ShipViewModel()
 	{
 
 	}
@@ -30,7 +39,31 @@ public partial class ShipViewModel : ObservableObject
 	public ShipViewModel(ShipTypes shipType)
 	{
         ShipType = shipType;
-		Width = 120;
+		ShipSetup(shipType);
+	}
+
+	private void ShipSetup(ShipTypes shipType)
+	{
+		switch (shipType)
+		{
+			case ShipTypes.Destroyer:
+                _size = 2;
+				break;
+            case ShipTypes.Submarine:
+                _size = 3;
+                break;
+            case ShipTypes.Cruiser:
+                _size = 3;
+                break;
+            case ShipTypes.Battleship:
+                _size = 4;
+                break;
+            case ShipTypes.Carrier:
+                _size = 5;
+                break;
+        }
+
+		Width = SingleSquareSize * _size;
 	}
 
 	#endregion

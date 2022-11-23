@@ -14,6 +14,18 @@ public class ShipTypeToImageSourceConverter : BaseValueConverter<ShipTypeToImage
             case ShipTypes.Submarine:
                 path = "Resources/Images/Submarine.jpg";
                 break;
+            case ShipTypes.Destroyer:
+                path = "Resources/Images/Destroyer.jpg";
+                break;
+            case ShipTypes.Cruiser:
+                path = "Resources/Images/Cruiser.jpg";
+                break;
+            case ShipTypes.Battleship:
+                path = "Resources/Images/Battleship.jpg";
+                break;
+            case ShipTypes.Carrier:
+                path = "Resources/Images/Carrier.jpg";
+                break;
             default:
                 Debugger.Break();
                 break;

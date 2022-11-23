@@ -106,6 +106,7 @@
         <!--Game Field-->
         <ItemsControl Grid.Row="1"
                       Grid.Column="1"
+                      AllowDrop="True"
                       ItemsSource="{Binding Ships}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
