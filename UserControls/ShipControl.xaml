@@ -10,11 +10,18 @@
 
     <Grid>
         <Rectangle Width="{Binding Width}"
-                   Height="40"
+                   Height="{Binding Height}"
                    local:DragElement.Value="true">
             <Rectangle.Fill>
                 <ImageBrush ImageSource="{Binding ShipType, Converter={local:ShipTypeToImageSourceConverter}}" />
             </Rectangle.Fill>
+            <Rectangle.RenderTransform>
+                <RotateTransform Angle="{Binding Angle}" CenterX="20" CenterY="20"/>
+            </Rectangle.RenderTransform>
+            <Rectangle.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" 
+                              Command="{Binding RotateCommand}" />
+            </Rectangle.InputBindings>
         </Rectangle>
     </Grid>
 </UserControl>

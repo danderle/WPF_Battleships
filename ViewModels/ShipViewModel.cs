@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Windows.Media;
 
 namespace Battleships;
 
@@ -14,11 +16,17 @@ public partial class ShipViewModel : ObservableObject
 	[ObservableProperty]
 	private double width;
 
-	[ObservableProperty]
+    [ObservableProperty]
+    private double height;
+
+    [ObservableProperty]
 	private double xpos = 0;
 
     [ObservableProperty]
     private double ypos = 0;
+
+    [ObservableProperty]
+    private double angle = 0;
 
     [ObservableProperty]
 	private ShipTypes shipType;
@@ -42,13 +50,36 @@ public partial class ShipViewModel : ObservableObject
 		ShipSetup(shipType);
 	}
 
-	private void ShipSetup(ShipTypes shipType)
-	{
-		switch (shipType)
-		{
-			case ShipTypes.Destroyer:
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    public void Rotate()
+    {
+        if (Alignment == ShipAlignment.Horizontal)
+        {
+            Alignment = ShipAlignment.Vertical;
+            Angle = 90;
+        }
+        else
+        {
+            Alignment = ShipAlignment.Horizontal;
+            Angle = 0;
+        }
+    }
+
+    #endregion
+
+    #region Methods
+
+    private void ShipSetup(ShipTypes shipType)
+    {
+        switch (shipType)
+        {
+            case ShipTypes.Destroyer:
                 _size = 2;
-				break;
+                break;
             case ShipTypes.Submarine:
                 _size = 3;
                 break;
@@ -63,8 +94,9 @@ public partial class ShipViewModel : ObservableObject
                 break;
         }
 
-		Width = SingleSquareSize * _size;
-	}
+        Width = SingleSquareSize * _size;
+        Height = 40;
+    }
 
-	#endregion
+    #endregion
 }
