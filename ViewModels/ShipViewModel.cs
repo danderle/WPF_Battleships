@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Windows.Media;
+using System.Collections.ObjectModel;
 
 namespace Battleships;
 
@@ -13,11 +12,10 @@ public partial class ShipViewModel : ObservableObject
 
 	private int _size = 0;
 
+    private Coordinate _resetCoordinate;
+
 	[ObservableProperty]
 	private double width;
-
-    [ObservableProperty]
-    private double height;
 
     [ObservableProperty]
 	private double xpos = 0;
@@ -34,6 +32,8 @@ public partial class ShipViewModel : ObservableObject
     [ObservableProperty]
     private ShipAlignment alignment;
 
+    public double Height => SingleSquareSize;
+    public ObservableCollection<Coordinate> HitCoordinates { get; set; } = new ObservableCollection<Coordinate>();
 
     #endregion
 
@@ -44,11 +44,22 @@ public partial class ShipViewModel : ObservableObject
 
 	}
 
-	public ShipViewModel(ShipTypes shipType)
+	public ShipViewModel(ShipTypes shipType, double yPos)
 	{
         ShipType = shipType;
-		ShipSetup(shipType);
+        Ypos = yPos;
+		ShipSetup();
 	}
+
+    public ShipViewModel(ShipViewModel ship)
+    {
+        ShipType = ship.ShipType;
+        Alignment = ship.Alignment;
+        Angle = ship.Angle;
+        Xpos = ship.Xpos;
+        Ypos = ship.Ypos;
+        ShipSetup();
+    }
 
     #endregion
 
@@ -57,15 +68,53 @@ public partial class ShipViewModel : ObservableObject
     [RelayCommand]
     public void Rotate()
     {
-        if (Alignment == ShipAlignment.Horizontal)
+        _resetCoordinate = new Coordinate(Xpos, Ypos);
+
+        switch(Alignment)
         {
-            Alignment = ShipAlignment.Vertical;
-            Angle = 90;
+            case ShipAlignment.Horizontal:
+                Alignment = ShipAlignment.Vertical;
+                Angle = 90;
+                if (Ypos + Width >= 400)
+                {
+                    Ypos -= (Ypos + Width) - 400;
+                }
+                break;
+            case ShipAlignment.Vertical:
+                Alignment = ShipAlignment.Horizontal;
+                Angle = 0;
+                if (Xpos + Width >= 400)
+                {
+                    Xpos -= (Xpos + Width) - 400;
+                }
+                break;
         }
-        else
+
+        SetHitCoordinates();
+    }
+
+    #endregion
+
+    #region Public methods
+
+    public void SetHitCoordinates()
+    {
+        HitCoordinates.Clear();
+
+        switch (Alignment)
         {
-            Alignment = ShipAlignment.Horizontal;
-            Angle = 0;
+            case ShipAlignment.Horizontal:
+                for (double x = Xpos; x < Xpos + Width; x += SingleSquareSize)
+                {
+                    HitCoordinates.Add(new Coordinate(x, Ypos));
+                }
+                break;
+            case ShipAlignment.Vertical:
+                for (double y = Ypos; y < Ypos + Width; y += SingleSquareSize)
+                {
+                    HitCoordinates.Add(new Coordinate(Xpos, y));
+                }
+                break;
         }
     }
 
@@ -73,9 +122,9 @@ public partial class ShipViewModel : ObservableObject
 
     #region Methods
 
-    private void ShipSetup(ShipTypes shipType)
+    private void ShipSetup()
     {
-        switch (shipType)
+        switch (ShipType)
         {
             case ShipTypes.Destroyer:
                 _size = 2;
@@ -95,7 +144,14 @@ public partial class ShipViewModel : ObservableObject
         }
 
         Width = SingleSquareSize * _size;
-        Height = 40;
+        SetHitCoordinates();
+    }
+
+    internal void Reset()
+    {
+        Xpos = _resetCoordinate.Xpos;
+        Ypos = _resetCoordinate.Ypos;
+        Rotate();
     }
 
     #endregion

@@ -4,10 +4,13 @@ using System.Windows.Input;
 
 namespace Battleships
 {
-    public class DragOverElement : BaseAttachedProperty<DragOverElement, bool>
+    public class DragOverElement : BaseAttachedProperty<DragOverElement, ICommand>
     {
+        private ICommand checkIfOverlappingCommand;
+
         public override void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            checkIfOverlappingCommand = (ICommand)e.NewValue;
             var element = d as FrameworkElement;
 
             if (element != null)
@@ -31,17 +34,17 @@ namespace Battleships
 
             if (ship.Alignment == ShipAlignment.Horizontal)
             {
-                if (xSnap >= 0 && xSnap < 400)
+                if (xSnap >= 0 && xSnap <= 400)
                 {
-                    if (xSnap + ship.Width > 400)
+                    if (xSnap + ship.Width >= 400)
                     {
                         xSnap -= (xSnap + ship.Width - 400);
                     }
                 }
 
-                if (ySnap >= 0 && ySnap < 400)
+                if (ySnap >= 0 && ySnap <= 400)
                 {
-                    if (ySnap + ship.Height > 400)
+                    if (ySnap + ship.Height >= 400)
                     {
                         ySnap -= (ySnap + ship.Height - 400);
                     }
@@ -49,25 +52,28 @@ namespace Battleships
             }
             else
             {
-                if (xSnap >= 0 && xSnap < 400)
+                if (xSnap >= 0 && xSnap <= 400)
                 {
-                    if (xSnap + ship.Height > 400)
+                    if (xSnap + ship.Height >= 400)
                     {
-                        xSnap -= (xSnap + ship.Height- 400);
+                        xSnap -= (xSnap + ship.Height - 400);
                     }
                 }
 
-                if (ySnap >= 0 && ySnap < 400)
+                if (ySnap >= 0 && ySnap <= 400)
                 {
-                    if (ySnap + ship.Width > 400)
+                    if (ySnap + ship.Width >= 400)
                     {
                         ySnap -= (ySnap + ship.Width - 400);
                     }
                 }
             }
 
-            ship.Xpos = xSnap;
-            ship.Ypos = ySnap;
+            var testShip = new ShipViewModel(ship);
+            testShip.Xpos = xSnap;
+            testShip.Ypos = ySnap;
+            testShip.SetHitCoordinates();
+            checkIfOverlappingCommand.Execute(testShip);
         }
     }
 }

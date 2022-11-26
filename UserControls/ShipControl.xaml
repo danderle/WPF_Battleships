@@ -20,7 +20,8 @@
             </Rectangle.RenderTransform>
             <Rectangle.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" 
-                              Command="{Binding RotateCommand}" />
+                              Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.RotateCommand}" 
+                              CommandParameter="{Binding}"/>
             </Rectangle.InputBindings>
         </Rectangle>
     </Grid>

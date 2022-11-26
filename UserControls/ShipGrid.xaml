@@ -107,7 +107,7 @@
         <ItemsControl Grid.Row="1"
                       Grid.Column="1"
                       AllowDrop="True"
-                      local:DragOverElement.Value="True"
+                      local:DragOverElement.Value="{Binding CheckIfOverlappingCommand}"
                       ItemsSource="{Binding Ships}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
