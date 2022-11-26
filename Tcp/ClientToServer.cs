@@ -17,7 +17,7 @@ public class ClientToServer
     public Action<string> ChallengePlayerAction;
     public Action<string> ChallengeAnswerAction;
     public Action<string> BusyAction;
-
+    public Action<string> FinishedSetupAction;
 
     public ClientToServer()
     {
@@ -62,6 +62,9 @@ public class ClientToServer
                         break;
                     case OpCodes.Busy:
                         BusyAction?.Invoke(message);
+                        break;
+                    case OpCodes.FinishedSetup:
+                        FinishedSetupAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();

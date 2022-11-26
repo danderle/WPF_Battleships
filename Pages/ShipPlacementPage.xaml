@@ -9,6 +9,40 @@
       Title="MainMenuPage">
     
     <Grid Background="{StaticResource BlackBrush}">
-        <local:ShipGrid DataContext="{Binding ShipGrid}" />
+        <Viewbox>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Double click ship to rotate"
+                           FontWeight="Bold"
+                           Margin="0 25 0 0"
+                           Style="{StaticResource LargeText}"/>
+
+                <local:ShipGrid Grid.Row="1"
+                                DataContext="{Binding ShipGrid}" />
+
+                <Button Grid.Row="2"
+                        Content="Start game"
+                        Command="{Binding StartGameCommand}"
+                        Style="{StaticResource BaseButton}" />
+            </Grid>
+        </Viewbox>
+
+        <Border Background="{StaticResource DarkGrayBrush}"
+                Opacity="0.8"
+                Visibility="{Binding WaitingMessageVisible, Converter={local:BoolToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource XLargeText}"
+                       FontWeight="Bold">
+                <Run Text="Waiting for" />
+                <Run Text="{Binding OpponentName, FallbackValue=Player2, Mode=OneWay}" 
+                     Foreground="{StaticResource OrangeBrush}"/>
+                <LineBreak />
+                <Run Text="to finish setup..."/>
+            </TextBlock>
+        </Border>
     </Grid>
 </Page>

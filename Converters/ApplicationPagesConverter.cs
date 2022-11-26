@@ -21,6 +21,8 @@ public class ApplicationPagesConverter : BaseValueConverter<ApplicationPagesConv
             case ApplicationPages.ShipPlacementPage:
                 return new ShipPlacementPage();
 
+            case ApplicationPages.BattlePage:
+                return new BattlePage();
             default:
                 Debugger.Break();
                 return null;

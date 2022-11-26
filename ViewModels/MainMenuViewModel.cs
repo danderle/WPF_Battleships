@@ -15,7 +15,6 @@ internal partial class MainMenuViewModel : ObservableObject
 	#region Fields
 
 	private object _lock = new object();
-	private ClientToServer _clientToServer = new ClientToServer();
 
 	#endregion
 
@@ -54,15 +53,14 @@ internal partial class MainMenuViewModel : ObservableObject
 	public MainMenuViewModel()
 	{
 		BindingOperations.EnableCollectionSynchronization(Users, _lock);
-		_clientToServer.ConnectedAction = NewConnection;
-		_clientToServer.ChallengePlayerAction = ChallengedByPlayer;
-		_clientToServer.ChallengeAnswerAction = ChallengeAnswer;
-		_clientToServer.BusyAction = Busy;
+		Inject.Application.Server.ConnectedAction = NewConnection;
+		Inject.Application.Server.ChallengePlayerAction = ChallengedByPlayer;
+		Inject.Application.Server.ChallengeAnswerAction = ChallengeAnswer;
+        Inject.Application.Server.BusyAction = Busy;
     }
 	#endregion
 
 	#region Server actions
-
 
 	private void Busy(string message)
 	{
@@ -113,7 +111,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		if (msg.Accept)
 		{
 			Opponent = Users.FirstOrDefault( user => user.Name == msg.Defender);
-            Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
+			GoToPlacementPage();
         }
         else
 		{
@@ -130,8 +128,8 @@ internal partial class MainMenuViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanConnectToServer))]
 	private void ConnectToServer()
 	{
-		_clientToServer.Username = username;
-		_clientToServer.ConnectToServer();
+        Inject.Application.Server.Username = Username;
+        Inject.Application.Server.ConnectToServer();
 	}
 
 	private bool CanConnectToServer()
@@ -143,7 +141,7 @@ internal partial class MainMenuViewModel : ObservableObject
     private void Challenge()
     {
 		var message = JsonSerializer.Serialize(new ChallengeMessage(Username, Opponent.Name));
-		_clientToServer.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
 		WaitingForChallengeAnswer = true;
 		OpenChallenge = true;
      
@@ -157,7 +155,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		};
 
 		message = JsonSerializer.Serialize(u);
-		_clientToServer.CreateAndSendPacket(OpCodes.Busy, message);
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
     }
 
     private bool CanChallenge()
@@ -169,16 +167,15 @@ internal partial class MainMenuViewModel : ObservableObject
     private void Accept()
     {
 		var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
-		_clientToServer.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
-
-		Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+		GoToPlacementPage();
     }
 
     [RelayCommand]
     private void Deny()
     {
         var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, false));
-        _clientToServer.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
 		Challenged = false;
     }
 
@@ -189,5 +186,14 @@ internal partial class MainMenuViewModel : ObservableObject
 		OpenChallenge = false;
     }
 
+	#endregion
+
+	#region Methods
+
+	private void GoToPlacementPage()
+	{
+		Inject.Application.OpponentName = Opponent.Name;
+        Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
+    }
     #endregion
 }

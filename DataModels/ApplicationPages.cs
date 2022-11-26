@@ -4,5 +4,6 @@
     {
         MainMenuPage,
         ShipPlacementPage,
+        BattlePage,
     }
 }
