@@ -127,7 +127,9 @@
                         <Ellipse Width="24"
                                  Height="24"
                                  Margin="8"
-                                 Fill="Red"
+                                 Stroke="Black"
+                                 StrokeThickness="0.5"
+                                 Fill="{Binding Hit, Converter={local:BoolToFillConverter}}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center"/>
                     </Grid>

@@ -1,15 +1,25 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BattleshipServer;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
+using System.Windows.Data;
 
 namespace Battleships;
 
 public partial class ShipGridViewModel : ObservableObject
 {
-	#region Properties
+    #region MyRegion
 
-	public ObservableCollection<ShipViewModel> Ships { get; set; } = new ObservableCollection<ShipViewModel>();
+    private object _lock = new object();
+
+    #endregion
+
+    #region Properties
+
+    public ObservableCollection<ShipViewModel> Ships { get; set; } = new ObservableCollection<ShipViewModel>();
 
     #endregion
 
@@ -22,13 +32,30 @@ public partial class ShipGridViewModel : ObservableObject
 		Ships.Add(new ShipViewModel(ShipTypes.Cruiser, 80));
 		Ships.Add(new ShipViewModel(ShipTypes.Submarine, 120));
 		Ships.Add(new ShipViewModel(ShipTypes.Destroyer, 160));
+
+		Inject.Application.Server.ShipDestroyedAction = ShipDestroyed;
+		BindingOperations.EnableCollectionSynchronization(Ships, _lock);
     }
 
-	#endregion
+    #endregion
 
-	#region Command methods
+    #region Server actions
 
-	[RelayCommand]
+    private void ShipDestroyed(string message)
+    {
+        var ship = JsonSerializer.Deserialize<ShipDestroyedMessage>(message);
+        
+        lock (_lock)
+        {
+            Ships.Add(new ShipViewModel(ship));
+        }
+    }
+
+    #endregion
+
+    #region Command methods
+
+    [RelayCommand]
 	public void CheckIfOverlapping(ShipViewModel testShip)
 	{
 		if (!IsOverlapping(testShip))

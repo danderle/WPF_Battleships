@@ -1,20 +1,30 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BattleshipServer;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 
 namespace Battleships;
 
 public partial class ShipViewModel : ObservableObject
 {
-	#region Properties
+    #region Fields
 
-	private readonly int SingleSquareSize = 40;
+    private readonly int SingleSquareSize = 40;
 
-	private int _size = 0;
+    private int _size = 0;
+    private int _hitCounter = 0;
 
     private Coordinate _resetCoordinate;
 
-	[ObservableProperty]
+    #endregion
+
+    #region Properties
+
+    [ObservableProperty]
+    private bool isDestroyed;
+
+    [ObservableProperty]
 	private double width;
 
     [ObservableProperty]
@@ -56,6 +66,17 @@ public partial class ShipViewModel : ObservableObject
         ShipType = ship.ShipType;
         Alignment = ship.Alignment;
         Angle = ship.Angle;
+        Xpos = ship.Xpos;
+        Ypos = ship.Ypos;
+        ShipSetup();
+    }
+
+    public ShipViewModel(ShipDestroyedMessage ship)
+    {
+        ShipType = ship.ShipType;
+        Alignment = ship.Alignment;
+        Angle = Alignment == ShipAlignment.Horizontal ? 0 : 90;
+        IsDestroyed = true;
         Xpos = ship.Xpos;
         Ypos = ship.Ypos;
         ShipSetup();
@@ -118,6 +139,19 @@ public partial class ShipViewModel : ObservableObject
         }
     }
 
+    internal void Reset()
+    {
+        Xpos = _resetCoordinate.Xpos;
+        Ypos = _resetCoordinate.Ypos;
+        Rotate();
+    }
+
+    internal void Hit()
+    {
+        _hitCounter++;
+        IsDestroyed = _hitCounter >= _size;
+    }
+
     #endregion
 
     #region Methods
@@ -145,13 +179,6 @@ public partial class ShipViewModel : ObservableObject
 
         Width = SingleSquareSize * _size;
         SetHitCoordinates();
-    }
-
-    internal void Reset()
-    {
-        Xpos = _resetCoordinate.Xpos;
-        Ypos = _resetCoordinate.Ypos;
-        Rotate();
     }
 
     #endregion

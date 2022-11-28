@@ -19,6 +19,8 @@ public class ClientToServer
     public Action<string> BusyAction;
     public Action<string> FinishedSetupAction;
     public Action<string> ShotFiredAction;
+    public Action<string> ShotConfirmationAction;
+    public Action<string> ShipDestroyedAction;
 
     public ClientToServer()
     {
@@ -69,6 +71,12 @@ public class ClientToServer
                         break;
                     case OpCodes.ShotFired:
                         ShotFiredAction?.Invoke(message);
+                        break;
+                    case OpCodes.ShotConfirmation:
+                        ShotConfirmationAction?.Invoke(message);
+                        break;
+                    case OpCodes.ShipDestroyed:
+                        ShipDestroyedAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();
