@@ -54,6 +54,9 @@
     <Compile Update="UserControls\ShipControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\HitMarkerGrid.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\ShipGrid.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -93,6 +96,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ShipControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\HitMarkerGrid.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

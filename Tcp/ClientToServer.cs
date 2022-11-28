@@ -18,6 +18,7 @@ public class ClientToServer
     public Action<string> ChallengeAnswerAction;
     public Action<string> BusyAction;
     public Action<string> FinishedSetupAction;
+    public Action<string> ShotFiredAction;
 
     public ClientToServer()
     {
@@ -65,6 +66,9 @@ public class ClientToServer
                         break;
                     case OpCodes.FinishedSetup:
                         FinishedSetupAction?.Invoke(message);
+                        break;
+                    case OpCodes.ShotFired:
+                        ShotFiredAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();

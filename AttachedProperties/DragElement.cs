@@ -11,6 +11,7 @@ namespace Battleships
 
             if (element != null)
             {
+                element.MouseMove -= Element_MouseMove;
                 element.MouseMove += Element_MouseMove;
             }
 

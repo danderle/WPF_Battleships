@@ -1,6 +1,7 @@
 ﻿using BattleshipServer;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Linq;
 using System.Text.Json;
 
 namespace Battleships
@@ -56,7 +57,7 @@ namespace Battleships
         {
             var message = JsonSerializer.Serialize(new ChallengeMessage(_myName, OpponentName));
             Inject.Application.Server.CreateAndSendPacket(OpCodes.FinishedSetup, message);
-
+            Inject.Application.MySetShips = ShipGrid.Ships.ToList();
             WaitingMessageVisible = true;
 
             if (_opponentFinished)

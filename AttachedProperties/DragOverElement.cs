@@ -15,6 +15,7 @@ namespace Battleships
 
             if (element != null)
             {
+                element.DragOver -= Element_DragOver;
                 element.DragOver += Element_DragOver;
             }
 

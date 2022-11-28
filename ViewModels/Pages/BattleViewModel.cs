@@ -13,6 +13,18 @@ namespace Battleships
 
         #region Properties
 
+        [ObservableProperty]
+        private ShipGridViewModel myShipGrid;
+
+        [ObservableProperty]
+        private ShipGridViewModel enemyShipGrid;
+
+        [ObservableProperty]
+        private HitMarkerViewModel myHitGrid = new HitMarkerViewModel();
+
+        [ObservableProperty]
+        private HitMarkerViewModel enemyHitGrid = new HitMarkerViewModel();
+
         #endregion
 
         #region Constructor

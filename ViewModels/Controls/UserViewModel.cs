@@ -2,7 +2,7 @@
 
 namespace Battleships;
 
-internal partial class UserViewModel : ObservableObject
+public partial class UserViewModel : ObservableObject
 {
 	#region Properties
 

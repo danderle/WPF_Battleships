@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 
 namespace Battleships
 {
@@ -6,9 +7,10 @@ namespace Battleships
     {
         public ClientToServer Server { get; private set; } = new ClientToServer();
         public string OpponentName { get; set; }
+        public List<ShipViewModel> MySetShips { get; set; }
 
         [ObservableProperty]
-        private ApplicationPages currentPage = ApplicationPages.MainMenuPage;
+        private ApplicationPages currentPage = ApplicationPages.BattlePage;
 
         public ApplicationViewModel()
         {

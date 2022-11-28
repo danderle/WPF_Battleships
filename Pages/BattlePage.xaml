@@ -8,7 +8,26 @@
       mc:Ignorable="d" 
       Title="MainMenuPage">
     
-    <Grid Background="Red">
-        
+    <Grid Background="{StaticResource BlackBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Viewbox>
+            <Grid>
+                <local:ShipGrid DataContext="{Binding MyShipGrid}" />
+                <local:HitMarkerGrid DataContext="{Binding MyHitGrid}" />
+                <Border Background="Transparent" />
+            </Grid>
+        </Viewbox>
+
+        <Viewbox Grid.Column="1"
+                 Margin="15 0 0 0">
+            <Grid>
+                <local:ShipGrid DataContext="{Binding EnemyShipGrid}" />
+                <local:HitMarkerGrid DataContext="{Binding EnemyHitGrid}" />
+            </Grid>
+        </Viewbox>
     </Grid>
 </Page>
