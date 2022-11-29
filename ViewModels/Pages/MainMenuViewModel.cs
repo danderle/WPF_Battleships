@@ -87,6 +87,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		if (Username == newUsername)
 		{
 			Connected = true;
+			Inject.Application.MyName = Username;
 		}
 	}
 

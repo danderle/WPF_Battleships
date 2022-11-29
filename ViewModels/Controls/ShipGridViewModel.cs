@@ -27,12 +27,6 @@ public partial class ShipGridViewModel : ObservableObject
 
     public ShipGridViewModel()
 	{
-		Ships.Add(new ShipViewModel(ShipTypes.Carrier, 0));
-		Ships.Add(new ShipViewModel(ShipTypes.Battleship, 40));
-		Ships.Add(new ShipViewModel(ShipTypes.Cruiser, 80));
-		Ships.Add(new ShipViewModel(ShipTypes.Submarine, 120));
-		Ships.Add(new ShipViewModel(ShipTypes.Destroyer, 160));
-
 		Inject.Application.Server.ShipDestroyedAction = ShipDestroyed;
 		BindingOperations.EnableCollectionSynchronization(Ships, _lock);
     }

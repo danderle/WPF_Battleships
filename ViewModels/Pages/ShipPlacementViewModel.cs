@@ -33,6 +33,14 @@ namespace Battleships
         public ShipPlacementViewModel()
         {
             Inject.Application.Server.FinishedSetupAction = FinishedSetup;
+            ShipGrid.Ships = new System.Collections.ObjectModel.ObservableCollection<ShipViewModel>()
+            {
+                new ShipViewModel(ShipTypes.Carrier, 0),
+                new ShipViewModel(ShipTypes.Battleship, 40),
+                new ShipViewModel(ShipTypes.Cruiser, 80),
+                new ShipViewModel(ShipTypes.Submarine, 120),
+                new ShipViewModel(ShipTypes.Destroyer, 160),
+            };
         }
 
         #endregion

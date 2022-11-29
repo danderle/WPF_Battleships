@@ -9,12 +9,36 @@
       Title="MainMenuPage">
     
     <Grid Background="{StaticResource BlackBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <Viewbox>
+        <Grid Grid.ColumnSpan="2"
+              Visibility="{Binding GameOver, Converter={local:InverseBoolToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource XLargeText}"
+                       Visibility="{Binding MyTurn, Converter={local:BoolToVisibilityConverter}}">
+                <Run Text="Your turn to fire," />
+                <Run Text="{Binding MyName, Mode=OneWay}" 
+                     Foreground="{StaticResource LightBlueBrush}"
+                     FontWeight="Bold"/>
+            </TextBlock>
+
+            <TextBlock Style="{StaticResource XLargeText}"
+                       Visibility="{Binding MyTurn, Converter={local:InverseBoolToVisibilityConverter}}">
+                <Run Text="Waiting for" />
+                <Run Text="{Binding OpponentName, Mode=OneWay}" 
+                     Foreground="{StaticResource LightBlueBrush}"
+                     FontWeight="Bold"/>
+            </TextBlock>
+        </Grid>
+        
+        
+        <Viewbox Grid.Row="1">
             <Grid>
                 <local:ShipGrid DataContext="{Binding MyShipGrid}" />
                 <local:HitMarkerGrid DataContext="{Binding MyHitGrid}" />
@@ -22,12 +46,19 @@
             </Grid>
         </Viewbox>
 
-        <Viewbox Grid.Column="1"
+        <Viewbox Grid.Row="1"
+                 Grid.Column="1"
                  Margin="15 0 0 0">
             <Grid>
                 <local:ShipGrid DataContext="{Binding EnemyShipGrid}" />
                 <local:HitMarkerGrid DataContext="{Binding EnemyHitGrid}" />
             </Grid>
         </Viewbox>
+
+        <Border Grid.RowSpan="2"
+                Grid.ColumnSpan="2"
+                Background="{StaticResource LightGrayBrush}"
+                Opacity="0.2"/>
+       
     </Grid>
 </Page>
