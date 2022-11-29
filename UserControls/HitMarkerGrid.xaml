@@ -105,9 +105,6 @@
                                         <GeometryDrawing.Geometry>
                                             <RectangleGeometry Rect="40 40 40 40" />
                                         </GeometryDrawing.Geometry>
-                                        <GeometryDrawing.Pen>
-                                            <Pen Brush="{StaticResource LightGrayBrush}" Thickness="0.5"/>
-                                        </GeometryDrawing.Pen>
                                     </GeometryDrawing>
                                 </DrawingBrush.Drawing>
                             </DrawingBrush>
@@ -131,7 +128,40 @@
                                  StrokeThickness="0.5"
                                  Fill="{Binding Hit, Converter={local:BoolToFillConverter}}"
                                  HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"/>
+                                 VerticalAlignment="Center"
+                                 RenderTransformOrigin="0.5 0.5">
+                            <Ellipse.RenderTransform>
+                                <ScaleTransform x:Name="animationTransform"
+                                                CenterX="0.5" CenterY="0.5"
+                                                ScaleX="1" ScaleY="1"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0:0:0.3"
+                                                             Storyboard.TargetProperty="(ScaleTransform.ScaleX)"
+                                                             Storyboard.TargetName="animationTransform"
+                                                             From="0" To="2.5" />
+                                            <DoubleAnimation Duration="0:0:0.3"
+                                                             Storyboard.TargetProperty="(ScaleTransform.ScaleY)"
+                                                             Storyboard.TargetName="animationTransform"
+                                                             From="0" To="2.5" />
+                                            <Storyboard BeginTime="0:0:0.3">
+                                                <DoubleAnimation Duration="0:0:0.3"
+                                                                 Storyboard.TargetProperty="(ScaleTransform.ScaleX)"
+                                                                 Storyboard.TargetName="animationTransform"
+                                                                 To="1" />
+                                                <DoubleAnimation Duration="0:0:0.3"
+                                                                 Storyboard.TargetProperty="(ScaleTransform.ScaleY)"
+                                                                 Storyboard.TargetName="animationTransform"
+                                                                 To="1" />
+                                            </Storyboard>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

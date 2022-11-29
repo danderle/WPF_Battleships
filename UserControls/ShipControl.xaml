@@ -6,23 +6,62 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:Battleships"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="40" d:DesignWidth="200">
 
     <Grid>
+        <Grid.RenderTransform>
+            <RotateTransform Angle="{Binding Angle}" CenterX="20" CenterY="20"/>
+        </Grid.RenderTransform>
         <Rectangle Width="{Binding Width}"
                    Height="{Binding Height}"
                    local:DragElement.Value="true">
             <Rectangle.Fill>
                 <ImageBrush ImageSource="{Binding ShipType, Converter={local:ShipTypeToImageSourceConverter}}" />
             </Rectangle.Fill>
-            <Rectangle.RenderTransform>
-                <RotateTransform Angle="{Binding Angle}" CenterX="20" CenterY="20"/>
-            </Rectangle.RenderTransform>
             <Rectangle.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" 
                               Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.RotateCommand}" 
                               CommandParameter="{Binding}"/>
             </Rectangle.InputBindings>
         </Rectangle>
+        <Border Visibility="{Binding IsDestroyed, Converter={local:BoolToVisibilityConverter}}"
+                Opacity="0.8">
+            <Border.Background>
+                <RadialGradientBrush RadiusX="0.7" RadiusY="0.5">
+                    <GradientStop Color="Red" Offset="0"/>
+                    <GradientStop Color="Orange" Offset="0.1"/>
+                    <GradientStop Color="Yellow" Offset="0.7"/>
+                    <GradientStop Color="Transparent" Offset="1"/>
+                </RadialGradientBrush>
+            </Border.Background>
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.3"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[0].(GradientStop.Color)"
+                                            From="DarkRed"
+                                            To="Red"/>
+                            <ColorAnimation Duration="0:0:0.3"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                            From="Red"
+                                            To="Orange"
+                                            BeginTime="0:0:0.1"/>
+                            <ColorAnimation Duration="0:0:0.3"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[2].(GradientStop.Color)"
+                                            From="Orange"
+                                            To="Yellow"
+                                            BeginTime="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+        </Border>
     </Grid>
 </UserControl>

@@ -17,7 +17,6 @@
                        Style="{StaticResource XXLargeText}"/>
             <TextBlock Text="You win"
                        Style="{StaticResource XXLargeText}"
-                       Margin="0 50"
                        FontWeight="Bold"
                        Visibility="{Binding Winner, Converter={local:BoolToVisibilityConverter}}"/>
             <TextBlock Text="You lose"
@@ -25,6 +24,7 @@
                        FontWeight="Bold"
                        Visibility="{Binding Winner, Converter={local:InverseBoolToVisibilityConverter}}"/>
             <Button Content="Continue"
+                    Margin="0 50"
                     Command="{Binding ContinueCommand}"
                     Style="{StaticResource BaseButton}"/>
         </StackPanel>

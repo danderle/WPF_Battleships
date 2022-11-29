@@ -101,6 +101,50 @@
                     <GradientStop Color="{StaticResource DarkBlue}" Offset="1" />
                 </LinearGradientBrush>
             </Grid.Background>
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            RepeatBehavior="Forever"
+                                            AutoReverse="True"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[0].(GradientStop.Color)"
+                                            From="{StaticResource DarkGreen}"
+                                            To="{StaticResource DarkBlue}"/>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                            From="{StaticResource DarkBlue}"
+                                            To="{StaticResource LightBlue}"/>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[2].(GradientStop.Color)"
+                                            From="{StaticResource LightBlue}"
+                                            To="{StaticResource RoyalBlue}"/>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[3].(GradientStop.Color)"
+                                            From="{StaticResource RoyalBlue}"
+                                            To="{StaticResource MediumBlue}"/>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[4].(GradientStop.Color)"
+                                            From="{StaticResource MediumBlue}"
+                                            To="{StaticResource LightBlue}"/>
+                            <ColorAnimation Duration="0:0:0.6"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever"
+                                            Storyboard.TargetProperty="(Background).(RadialGradientBrush.GradientStops)[5].(GradientStop.Color)"
+                                            From="{StaticResource LightBlue}"
+                                            To="{StaticResource DarkBlue}"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
         </Grid>
 
         <!--Game Field-->

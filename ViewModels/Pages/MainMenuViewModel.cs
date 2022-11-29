@@ -112,6 +112,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		if (msg.Accept)
 		{
 			Opponent = Users.FirstOrDefault( user => user.Name == msg.Defender);
+			OpenChallenge = false;
 			GoToPlacementPage();
         }
         else
@@ -120,7 +121,6 @@ internal partial class MainMenuViewModel : ObservableObject
 		}
 
 		WaitingForChallengeAnswer = false;
-        OpenChallenge = false;
     }
 
     #endregion
