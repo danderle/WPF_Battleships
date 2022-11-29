@@ -22,6 +22,7 @@ public class ClientToServer
     public Action<string> ShotConfirmationAction;
     public Action<string> ShipDestroyedAction;
     public Action<string> GameoverAction;
+    public Action<string> WhoStartsAction;
 
     public ClientToServer()
     {
@@ -81,6 +82,9 @@ public class ClientToServer
                         break;
                     case OpCodes.GameOver:
                         GameoverAction?.Invoke(message);
+                        break;
+                    case OpCodes.WhoStarts:
+                        WhoStartsAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();

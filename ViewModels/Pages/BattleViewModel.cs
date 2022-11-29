@@ -37,6 +37,7 @@ namespace Battleships
         private HitMarkerViewModel enemyHitGrid = new HitMarkerViewModel();
 
         public string MyName => Inject.Application.MyName;
+        public string OpponentName => Inject.Application.OpponentName;
 
         #endregion
 
@@ -44,16 +45,18 @@ namespace Battleships
 
         public BattleViewModel()
         {
-            Inject.Application.Server.GameoverAction = Gameover;
-            enemyHitGrid.SwitchTurn = SwitchTurn;
+            Inject.Application.Server.GameoverAction = GameOverAction;
+            MyHitGrid.SwitchTurn = SwitchTurn;
+            EnemyHitGrid.SwitchTurn = SwitchTurn;
             Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
             myShipGrid.Ships = new ObservableCollection<ShipViewModel>(Inject.Application.MySetShips);
+            MyTurn = Inject.Application.Istart;
         }
         #endregion
 
         #region Server Actions
 
-        private void Gameover(string message)
+        private void GameOverAction(string message)
         {
             var gameOver = JsonSerializer.Deserialize<GameOverMessage>(message);
 
@@ -73,6 +76,19 @@ namespace Battleships
 
         #region Command method
 
+        [RelayCommand]
+        public void Continue()
+        {
+            var user = new User()
+            {
+                Name = MyName,
+                IsBusy = false,
+            };
+
+            string message = JsonSerializer.Serialize(user);
+            Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
+        }
 
         #endregion
 

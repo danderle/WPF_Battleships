@@ -80,6 +80,7 @@ namespace Battleships
 
         private void GoToBattle()
         {
+            WaitingMessageVisible = false;
             Inject.Application.CurrentPage = ApplicationPages.BattlePage;
         }
 

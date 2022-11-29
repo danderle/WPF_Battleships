@@ -49,8 +49,9 @@ public partial class HitMarkerViewModel : ObservableObject
 	public void ShotFired(string message)
     {
         var shot = JsonSerializer.Deserialize<ShotFiredMessage>(message);
+		shot.Opponent = OpponentName;
 		foreach (var ship in _placedShips)
-		{
+        {
 			if (!ship.IsDestroyed)
 			{
 				var shotCoo = new Coordinate(shot.Xpos, shot.Ypos);
@@ -60,7 +61,6 @@ public partial class HitMarkerViewModel : ObservableObject
 					shot.Hit = true;
 					ship.Hit();
 					AddShotFired(shot);
-					shot.Opponent = OpponentName;
 					message = JsonSerializer.Serialize(shot);
 					Inject.Application.Server.CreateAndSendPacket(OpCodes.ShotConfirmation, message);
 
@@ -73,7 +73,7 @@ public partial class HitMarkerViewModel : ObservableObject
 						_gameover = _placedShips.Count == _shipsDestroyed;
 						if (_gameover)
 						{
-							message = JsonSerializer.Serialize(new GameOverMessage(MyName, OpponentName));
+							message = JsonSerializer.Serialize(new GameOverMessage(OpponentName, MyName));
 							Inject.Application.Server.CreateAndSendPacket(OpCodes.GameOver, message);
 						}
                     }

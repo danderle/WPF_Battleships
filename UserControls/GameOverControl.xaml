@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Battleships.GameOverControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:Battleships"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid Background="{StaticResource LightGrayBrush}"
+          Opacity="0.9">
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock Text="Game over"
+                       FontWeight="Bold"
+                       Style="{StaticResource XXLargeText}"/>
+            <TextBlock Text="You win"
+                       Style="{StaticResource XXLargeText}"
+                       Margin="0 50"
+                       FontWeight="Bold"
+                       Visibility="{Binding Winner, Converter={local:BoolToVisibilityConverter}}"/>
+            <TextBlock Text="You lose"
+                       Style="{StaticResource XXLargeText}"
+                       FontWeight="Bold"
+                       Visibility="{Binding Winner, Converter={local:InverseBoolToVisibilityConverter}}"/>
+            <Button Content="Continue"
+                    Command="{Binding ContinueCommand}"
+                    Style="{StaticResource BaseButton}"/>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

@@ -120,6 +120,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		}
 
 		WaitingForChallengeAnswer = false;
+        OpenChallenge = false;
     }
 
     #endregion
@@ -170,6 +171,7 @@ internal partial class MainMenuViewModel : ObservableObject
 		var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
         Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
 		GoToPlacementPage();
+		Challenged = false;
     }
 
     [RelayCommand]

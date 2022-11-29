@@ -58,7 +58,13 @@
         <Border Grid.RowSpan="2"
                 Grid.ColumnSpan="2"
                 Background="{StaticResource LightGrayBrush}"
-                Opacity="0.2"/>
-       
+                Opacity="0.2"
+                Visibility="{Binding MyTurn, Converter={local:InverseBoolToVisibilityConverter}}"/>
+
+        <local:GameOverControl Grid.RowSpan="2"
+                               Grid.ColumnSpan="2"
+                               DataContext="{Binding}"
+                               Visibility="{Binding GameOver, Converter={local:BoolToVisibilityConverter}}"/>
+
     </Grid>
 </Page>
