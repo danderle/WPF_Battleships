@@ -6,7 +6,86 @@
         xmlns:local="clr-namespace:Battleships"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="800" Width="800"
-        Content="{Binding CurrentPage, Source={x:Static local:Inject.Application}, Converter={local:ApplicationPagesConverter}}">
-    
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Title="MainWindow" Height="800" Width="800">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type local:MainWindow}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Window">
+                        <Border Padding="{Binding Padding}">
+                            <Grid>
+                                <Border x:Name="container"
+                                        CornerRadius="{Binding CornerRadius}"
+                                        Background="{StaticResource BlackBrush}"/>
+
+                                <!--Main window including the resizable border-->
+                                <Border CornerRadius="{Binding ElementName=container, Path=CornerRadius}">
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="1" Opacity="0.2"/>
+                                    </Border.Effect>
+
+                                    <Grid>
+                                        <!--Corner clipping-->
+                                        <Grid.OpacityMask>
+                                            <VisualBrush Visual="{Binding ElementName=container}" />
+                                        </Grid.OpacityMask>
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--Top row-->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button Content="C"
+                                                    Command="{Binding SystemMenuCommand}"
+                                                    Style="{StaticResource SystemMenuButton}"/>
+
+                                            <TextBlock Grid.ColumnSpan="3"
+                                                       Text="Battleships"
+                                                       Foreground="{StaticResource OrangeBrush}"
+                                                       Style="{StaticResource LargeText}" />
+
+                                            <StackPanel Grid.Column="2"
+                                                        Orientation="Horizontal">
+                                                <Button Content="_"
+                                                        Command="{Binding MinimizeCommand}"
+                                                        Style="{StaticResource WindowControlButton}"/>
+                                                <Button Content="[ ]"
+                                                        Command="{Binding MaximizeCommand}"
+                                                        Style="{StaticResource WindowControlButton}"/>
+                                                <Button Content="X"
+                                                        Command="{Binding CloseCommand}"
+                                                        Style="{StaticResource WindowCloseControlButton}"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <ContentPresenter Grid.Row="1" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="15"
+                      CaptionHeight="40"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Frame Content="{Binding CurrentPage, Source={x:Static local:Inject.Application}, Converter={local:ApplicationPagesConverter}}"/>
 </Window>

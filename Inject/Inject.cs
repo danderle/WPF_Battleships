@@ -66,6 +66,7 @@ namespace Battleships
             Services.AddSingleton<MainMenuViewModel>();
             Services.AddTransient<ShipPlacementViewModel>();
             Services.AddTransient<BattleViewModel>();
+            Services.AddSingleton<MainWindowViewModel>();
         } 
 
         #endregion
