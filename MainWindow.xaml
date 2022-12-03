@@ -90,5 +90,5 @@
                       CornerRadius="0"/>
     </WindowChrome.WindowChrome>
 
-    <Frame Content="{Binding CurrentPage, Source={x:Static local:Inject.Application}, Converter={local:ApplicationPagesConverter}}"/>
+    <local:PageHost CurrentPage="{Binding CurrentPage, Source={x:Static local:Inject.Application}, Converter={local:ApplicationPagesConverter}}"/>
 </Window>

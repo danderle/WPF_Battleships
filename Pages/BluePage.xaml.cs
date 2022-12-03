@@ -5,9 +5,9 @@ namespace Battleships;
 /// <summary>
 /// Interaction logic for MainMenuPage.xaml
 /// </summary>
-public partial class MainMenuPage : AnimationPage
+public partial class BluePage : AnimationPage
 {
-    public MainMenuPage()
+    public BluePage()
     {
         InitializeComponent();
         DataContext = Inject.Service<MainMenuViewModel>();

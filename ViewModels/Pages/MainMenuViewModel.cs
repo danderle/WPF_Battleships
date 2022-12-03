@@ -189,11 +189,23 @@ internal partial class MainMenuViewModel : ObservableObject
 		OpenChallenge = false;
     }
 
-	#endregion
+    [RelayCommand]
+    private void Page()
+    {
+		Inject.Application.CurrentPage = ApplicationPages.Blue;
+    }
 
-	#region Methods
+    [RelayCommand]
+    private void Back()
+    {
+        Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
+    }
 
-	private void GoToPlacementPage()
+    #endregion
+
+    #region Methods
+
+    private void GoToPlacementPage()
 	{
 		Inject.Application.OpponentName = Opponent.Name;
         Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;

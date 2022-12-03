@@ -5,5 +5,6 @@
         MainMenuPage,
         ShipPlacementPage,
         BattlePage,
+        Blue
     }
 }

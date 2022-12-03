@@ -5,7 +5,7 @@ namespace Battleships;
 /// <summary>
 /// Interaction logic for ShipPlacementPage.xaml
 /// </summary>
-public partial class ShipPlacementPage : Page
+public partial class ShipPlacementPage : AnimationPage
 {
     public ShipPlacementPage()
     {
