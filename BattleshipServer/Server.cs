@@ -1,0 +1,195 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text.Json;
+
+namespace BattleshipServer;
+
+public class Server
+{
+    private static List<Client> _users = new List<Client>();
+
+	public Server()
+	{
+		Run();
+	}
+
+	private void Run()
+	{
+		//fhfh
+		Console.WriteLine("Battleship Server online!");
+
+		TcpListener listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8080);
+		listener.Start();
+
+		Console.WriteLine("Listening for incomming connections on localhost");
+
+		while (true)
+		{
+			var client = new Client(listener.AcceptTcpClient());
+			_users.Add(client);
+
+			Console.WriteLine($"New user connected. Name: {client.User.Name}");
+
+			BroadCastConnection();
+		}
+    }
+
+    #region Pack message and send
+
+    private static void CreateAndSendPacket(Client user, OpCodes code, string message)
+    {
+        if (user == null)
+        {
+            return;
+        }
+
+        var packet = new PacketBuilder();
+        packet.WriteOpCode((byte)code);
+        packet.WriteMessage(message);
+
+        user?.TcpSockect.Client.Send(packet.GetPacktBytes());
+    }
+
+    #endregion
+
+    #region Broad cast methods
+
+    private void BroadCastConnection()
+	{
+		foreach (var user in _users)
+		{
+			foreach (var other in _users)
+			{
+				var message = other.User.Name;
+				CreateAndSendPacket(user, OpCodes.Connect, message);
+            }
+		}
+	}
+
+    public static void BroadCastChallenge(string message)
+    {
+        ChallengeMessage msg = JsonSerializer.Deserialize<ChallengeMessage>(message);
+		var defender = _users.FirstOrDefault(user => user.User.Name == msg.Defender);
+		defender.User.IsBusy = true;
+		CreateAndSendPacket(defender, OpCodes.ChallengePlayer, message);
+
+		Console.WriteLine($"{msg.Challenger} has challenged {defender.User.Name}");
+    }
+
+	internal static void BroadCastChallengeAnswer(string message)
+	{
+        ChallengeAnswerMessage msg = JsonSerializer.Deserialize<ChallengeAnswerMessage>(message);
+        var challenger = _users.FirstOrDefault(user => user.User.Name == msg.Challenger);
+        var defender = _users.FirstOrDefault(user => user.User.Name == msg.Defender);
+        CreateAndSendPacket(challenger, OpCodes.ChallengeAnswer, message);
+
+		if (msg.Accept)
+		{
+            Console.WriteLine($"{msg.Defender} has accepted {msg.Challenger} challenge");
+        }
+        else
+		{
+			Console.WriteLine($"{msg.Defender} has denied {msg.Challenger} challenge");
+			challenger.User.IsBusy = false;
+			defender.User.IsBusy = false;
+			BroadCastBusy();
+        }
+    }
+
+    internal static void BroadCastBusy()
+    {
+        foreach (var user in _users)
+		{
+			Console.WriteLine($"{user.User.Name} is busy -- {user.User.IsBusy}");
+			foreach (var other in _users)
+			{
+				var message = JsonSerializer.Serialize(other.User);
+				CreateAndSendPacket(user, OpCodes.Busy, message);
+			}
+		}
+    }
+
+
+    internal static void BroadCastFinishedSetup(string message)
+    {
+        var finishedMessage = JsonSerializer.Deserialize<ChallengeMessage>(message);
+		var finishedPlayer = _users.FirstOrDefault(item => item.User.Name == finishedMessage.Challenger);
+		finishedPlayer.User.HasFinishedSetup = true;
+		var otherPlayer = _users.FirstOrDefault(item => item.User.Name == finishedMessage.Defender);
+
+		Console.WriteLine($"{finishedPlayer.User.Name} has finished ship setup");
+		if (!otherPlayer.User.HasFinishedSetup)
+		{
+			Console.WriteLine($"Waiting for {otherPlayer.User.Name}");
+		}
+
+		CreateAndSendPacket(otherPlayer, OpCodes.FinishedSetup, message);
+
+		if (finishedPlayer.User.HasFinishedSetup &&
+			otherPlayer.User.HasFinishedSetup)
+		{
+			Console.WriteLine($"Both players, {finishedPlayer.User.Name} vs. {otherPlayer.User.Name}, have finished ship placement");
+
+			Random random = new Random();
+			var player = random.Next(0, 2);
+			if (player == 0)
+			{
+				CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
+				CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
+				Console.WriteLine($"{finishedPlayer.User.Name} starts the game");
+            }
+			else
+			{
+                CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
+                CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
+                Console.WriteLine($"{otherPlayer.User.Name} starts the game");
+            }
+			
+			finishedPlayer.User.HasFinishedSetup = false;
+			otherPlayer.User.HasFinishedSetup = false;
+		}
+    }
+
+    internal static void BroadCastShotFired(string message)
+    {
+		var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
+		var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
+
+		Console.WriteLine($"Shot fired at {target.User.Name}");
+		CreateAndSendPacket(target, OpCodes.ShotFired, message);
+    }
+
+	internal static void BroadCastShotConfirmation(string message)
+	{
+        var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
+        var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
+
+        Console.WriteLine($"Shot confirmation for {target.User.Name}");
+		Console.WriteLine($"Shot is a " + (shotFired.Hit? "hit" : "miss"));
+        CreateAndSendPacket(target, OpCodes.ShotConfirmation, message);
+    }
+
+    internal static void BroadCastShipDestroyed(string message)
+    {
+        var shipDestroyed = JsonSerializer.Deserialize<ShipDestroyedMessage>(message);
+        var target = _users.FirstOrDefault(item => item.User.Name == shipDestroyed.Opponent);
+
+        Console.WriteLine($"User {target.User.Name} has destroyed a {shipDestroyed.ShipType}");
+        CreateAndSendPacket(target, OpCodes.ShipDestroyed, message);
+    }
+
+	internal static void BroadCastGameOver(string message)
+	{
+        var gameOver = JsonSerializer.Deserialize<GameOverMessage>(message);
+        var winner = _users.FirstOrDefault(item => item.User.Name == gameOver.Winner);
+        var loser = _users.FirstOrDefault(item => item.User.Name == gameOver.Loser);
+
+        Console.WriteLine($"{winner.User.Name} vs {loser.User.Name } result:");
+        Console.WriteLine($"{winner.User.Name} is the WINNER!");
+
+        CreateAndSendPacket(winner, OpCodes.GameOver, message);
+        CreateAndSendPacket(loser, OpCodes.GameOver, message);
+    }
+
+	#endregion
+}
