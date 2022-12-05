@@ -16,7 +16,7 @@
                         MinWidth="150"/>
 
         <Button Content="Connect to Server"
-                Command="{Binding ConnectToServerCommand}"
+                Command="{Binding CreateNewUserCommand}"
                 Style="{StaticResource BaseButton}"
                 Margin="0 25"/>
 

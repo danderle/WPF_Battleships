@@ -28,7 +28,7 @@ public class Server
 			var client = new Client(listener.AcceptTcpClient());
 			_users.Add(client);
 
-			Console.WriteLine($"New user connected. Name: {client.User.Name}");
+			Console.WriteLine($"[{DateTime.Now}]: A new default client has connected to the server");
 
 			BroadCastConnection();
 		}
@@ -47,21 +47,24 @@ public class Server
         packet.WriteOpCode((byte)code);
         packet.WriteMessage(message);
 
-        user?.TcpSockect.Client.Send(packet.GetPacktBytes());
+        user?.TcpSocket.Client.Send(packet.GetPacktBytes());
     }
 
     #endregion
 
     #region Broad cast methods
 
-    private void BroadCastConnection()
+    public static void BroadCastConnection()
 	{
 		foreach (var user in _users)
 		{
 			foreach (var other in _users)
 			{
-				var message = other.User.Name;
-				CreateAndSendPacket(user, OpCodes.Connect, message);
+				if (other.User.Name != Client.Default)
+				{
+					var message = other.User.Name;
+					CreateAndSendPacket(user, OpCodes.NewUser, message);
+				}
             }
 		}
 	}
@@ -73,7 +76,7 @@ public class Server
 		defender.User.IsBusy = true;
 		CreateAndSendPacket(defender, OpCodes.ChallengePlayer, message);
 
-		Console.WriteLine($"{msg.Challenger} has challenged {defender.User.Name}");
+		Console.WriteLine($"[{DateTime.Now}]: {msg.Challenger} has challenged {defender.User.Name}");
     }
 
 	internal static void BroadCastChallengeAnswer(string message)
@@ -85,11 +88,11 @@ public class Server
 
 		if (msg.Accept)
 		{
-            Console.WriteLine($"{msg.Defender} has accepted {msg.Challenger} challenge");
+            Console.WriteLine($"[{DateTime.Now}]: {msg.Defender} has accepted {msg.Challenger} challenge");
         }
         else
 		{
-			Console.WriteLine($"{msg.Defender} has denied {msg.Challenger} challenge");
+			Console.WriteLine($"[{DateTime.Now}]: {msg.Defender} has denied {msg.Challenger} challenge");
 			challenger.User.IsBusy = false;
 			defender.User.IsBusy = false;
 			BroadCastBusy();
@@ -100,7 +103,7 @@ public class Server
     {
         foreach (var user in _users)
 		{
-			Console.WriteLine($"{user.User.Name} is busy -- {user.User.IsBusy}");
+			Console.WriteLine($"[{DateTime.Now}]: {user.User.Name} is busy -- {user.User.IsBusy}");
 			foreach (var other in _users)
 			{
 				var message = JsonSerializer.Serialize(other.User);
@@ -117,10 +120,10 @@ public class Server
 		finishedPlayer.User.HasFinishedSetup = true;
 		var otherPlayer = _users.FirstOrDefault(item => item.User.Name == finishedMessage.Defender);
 
-		Console.WriteLine($"{finishedPlayer.User.Name} has finished ship setup");
+		Console.WriteLine($"[{DateTime.Now}]: {finishedPlayer.User.Name} has finished ship setup");
 		if (!otherPlayer.User.HasFinishedSetup)
 		{
-			Console.WriteLine($"Waiting for {otherPlayer.User.Name}");
+			Console.WriteLine($"[{DateTime.Now}]: Waiting for {otherPlayer.User.Name}");
 		}
 
 		CreateAndSendPacket(otherPlayer, OpCodes.FinishedSetup, message);
@@ -128,7 +131,7 @@ public class Server
 		if (finishedPlayer.User.HasFinishedSetup &&
 			otherPlayer.User.HasFinishedSetup)
 		{
-			Console.WriteLine($"Both players, {finishedPlayer.User.Name} vs. {otherPlayer.User.Name}, have finished ship placement");
+			Console.WriteLine($"[{DateTime.Now}]: Both players, {finishedPlayer.User.Name} vs. {otherPlayer.User.Name}, have finished ship placement");
 
 			Random random = new Random();
 			var player = random.Next(0, 2);
@@ -136,13 +139,13 @@ public class Server
 			{
 				CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
 				CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
-				Console.WriteLine($"{finishedPlayer.User.Name} starts the game");
+				Console.WriteLine($"[{DateTime.Now}]: {finishedPlayer.User.Name} starts the game");
             }
 			else
 			{
                 CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
                 CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
-                Console.WriteLine($"{otherPlayer.User.Name} starts the game");
+                Console.WriteLine($"[{DateTime.Now}]: {otherPlayer.User.Name} starts the game");
             }
 			
 			finishedPlayer.User.HasFinishedSetup = false;
@@ -155,7 +158,7 @@ public class Server
 		var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
 		var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
 
-		Console.WriteLine($"Shot fired at {target.User.Name}");
+		Console.WriteLine($"[{DateTime.Now}]: Shot fired at {target.User.Name}");
 		CreateAndSendPacket(target, OpCodes.ShotFired, message);
     }
 
@@ -164,8 +167,8 @@ public class Server
         var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
         var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
 
-        Console.WriteLine($"Shot confirmation for {target.User.Name}");
-		Console.WriteLine($"Shot is a " + (shotFired.Hit? "hit" : "miss"));
+        Console.WriteLine($"[{DateTime.Now}]: Shot confirmation for {target.User.Name}");
+		Console.WriteLine($"[{DateTime.Now}]: Shot is a " + (shotFired.Hit? "hit" : "miss"));
         CreateAndSendPacket(target, OpCodes.ShotConfirmation, message);
     }
 
@@ -174,7 +177,7 @@ public class Server
         var shipDestroyed = JsonSerializer.Deserialize<ShipDestroyedMessage>(message);
         var target = _users.FirstOrDefault(item => item.User.Name == shipDestroyed.Opponent);
 
-        Console.WriteLine($"User {target.User.Name} has destroyed a {shipDestroyed.ShipType}");
+        Console.WriteLine($"[{DateTime.Now}]: User {target.User.Name} has destroyed a {shipDestroyed.ShipType}");
         CreateAndSendPacket(target, OpCodes.ShipDestroyed, message);
     }
 
@@ -184,8 +187,8 @@ public class Server
         var winner = _users.FirstOrDefault(item => item.User.Name == gameOver.Winner);
         var loser = _users.FirstOrDefault(item => item.User.Name == gameOver.Loser);
 
-        Console.WriteLine($"{winner.User.Name} vs {loser.User.Name } result:");
-        Console.WriteLine($"{winner.User.Name} is the WINNER!");
+        Console.WriteLine($"[{DateTime.Now}]: {winner.User.Name} vs {loser.User.Name } result:");
+        Console.WriteLine($"[{DateTime.Now}]: {winner.User.Name} is the WINNER!");
 
         CreateAndSendPacket(winner, OpCodes.GameOver, message);
         CreateAndSendPacket(loser, OpCodes.GameOver, message);

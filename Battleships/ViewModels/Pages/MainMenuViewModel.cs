@@ -21,7 +21,7 @@ internal partial class MainMenuViewModel : ObservableObject
 	#region Properties
 
 	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(ConnectToServerCommand))]
+	[NotifyCanExecuteChangedFor(nameof(CreateNewUserCommand))]
 	private string username;
 
     [ObservableProperty]
@@ -53,10 +53,12 @@ internal partial class MainMenuViewModel : ObservableObject
 	public MainMenuViewModel()
 	{
 		BindingOperations.EnableCollectionSynchronization(Users, _lock);
-		Inject.Application.Server.ConnectedAction = NewConnection;
+		Inject.Application.Server.NewUserAction = NewConnection;
 		Inject.Application.Server.ChallengePlayerAction = ChallengedByPlayer;
 		Inject.Application.Server.ChallengeAnswerAction = ChallengeAnswer;
         Inject.Application.Server.BusyAction = Busy;
+
+		Inject.Application.Server.ConnectToServer();
     }
 	#endregion
 
@@ -127,16 +129,16 @@ internal partial class MainMenuViewModel : ObservableObject
 
     #region Command methods
 
-    [RelayCommand(CanExecute = nameof(CanConnectToServer))]
-	private void ConnectToServer()
+    [RelayCommand(CanExecute = nameof(CanCreateNewUser))]
+	private void CreateNewUser()
 	{
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.NewUser, Username);
         Inject.Application.Server.Username = Username;
-        Inject.Application.Server.ConnectToServer();
 	}
 
-	private bool CanConnectToServer()
+	private bool CanCreateNewUser()
 	{
-		return !string.IsNullOrEmpty(Username);
+		return !string.IsNullOrWhiteSpace(Username) && !Users.Any(item => item.Name == Username);
 	}
 
 	[RelayCommand(CanExecute = nameof(CanChallenge))]

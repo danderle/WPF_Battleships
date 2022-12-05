@@ -13,7 +13,7 @@ public class ClientToServer
 
     public string Username;
 
-    public Action<string> ConnectedAction;
+    public Action<string> NewUserAction;
     public Action<string> ChallengePlayerAction;
     public Action<string> ChallengeAnswerAction;
     public Action<string> BusyAction;
@@ -36,10 +36,7 @@ public class ClientToServer
             _client.Connect("127.0.0.1", 8080);
             _packetReader = new PacketReader(_client.GetStream());
 
-            var packet = new PacketBuilder();
-            packet.WriteOpCode((byte)OpCodes.Connect);
-            packet.WriteMessage(Username);
-            _client.Client.Send(packet.GetPacktBytes());
+            CreateAndSendPacket(OpCodes.DefaultClient, "default");
 
             await ReadPackets();
         }
@@ -56,8 +53,8 @@ public class ClientToServer
 
                 switch (opCode)
                 {
-                    case OpCodes.Connect:
-                        ConnectedAction?.Invoke(message);
+                    case OpCodes.NewUser:
+                        NewUserAction?.Invoke(message);
                         break;
                     case OpCodes.ChallengePlayer:
                         ChallengePlayerAction?.Invoke(message);

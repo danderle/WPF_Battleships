@@ -1,25 +1,30 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text.Json;
 
 namespace BattleshipServer;
 
 internal class Client
 {
-    public TcpClient TcpSockect;
+    public TcpClient TcpSocket;
 
     private PacketReader _packetReader;
 
+    public static string Default = "default";
     public User User { get; set; } = new User();
     public Client(TcpClient tcpClient)
     {
-        TcpSockect = tcpClient;
-        _packetReader = new PacketReader(TcpSockect.GetStream());
+        TcpSocket = tcpClient;
+        _packetReader = new PacketReader(TcpSocket.GetStream());
+
+        User.Id = Guid.NewGuid();
+        User.Name = Default;
 
         var opCode = _packetReader.ReadByte();
-        User.Name = _packetReader.ReadMessage();
+        var message = _packetReader.ReadMessage();
 
-        Console.WriteLine($"New client {User.Name}, attempting to connect");
+        Console.WriteLine($"[{DateTime.Now}]: A new default client is attempting to connecto to server");
 
         Task.Run(() => Process());
     }
@@ -35,6 +40,11 @@ internal class Client
 
                 switch (opCode)
                 {
+                    case OpCodes.NewUser:
+                        User.Name = message;
+                        Console.WriteLine($"[{DateTime.Now}]: Created a new username {User.Name}");
+                        Server.BroadCastConnection();
+                        break;
                     case OpCodes.ChallengePlayer:
                         User.IsBusy = true;
                         Server.BroadCastChallenge(message);
@@ -62,11 +72,16 @@ internal class Client
                     case OpCodes.GameOver:
                         Server.BroadCastGameOver(message);
                         break;
+                    default:
+                        Debugger.Break();
+                        break;
                 }
             }
             catch (Exception ex)
             {
-                Debugger.Break();
+                Console.WriteLine(ex.Message);
+                TcpSocket.Close();
+                break;
             }
         }
     }

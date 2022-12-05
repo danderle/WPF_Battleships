@@ -14,9 +14,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Battleships"
-                Foreground="{StaticResource OrangeBrush}"
-                Style="{StaticResource XXLargeText}"
+        <TextBlock Text="Create user"
+                Foreground="{StaticResource MediumBlueBrush}"
+                Style="{StaticResource LargeText}"
                 Margin="25"/>
 
         <Grid Grid.Row="1">

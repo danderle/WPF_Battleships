@@ -2,7 +2,8 @@
 
 public enum OpCodes
 {
-    Connect,
+    DefaultClient,
+    NewUser,
     ChallengePlayer,
     ChallengeAnswer,
     Busy,
