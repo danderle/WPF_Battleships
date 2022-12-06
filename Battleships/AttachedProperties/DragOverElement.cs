@@ -1,4 +1,5 @@
-﻿using BattleshipServer;
+﻿using BattleshipServer.Core;
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

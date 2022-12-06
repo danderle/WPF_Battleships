@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,12 +19,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BattleshipServer\BattleshipServer.csproj" />
+    <ProjectReference Include="..\BattleshipServer.Core\BattleshipServer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,9 +53,6 @@
 
   <ItemGroup>
     <Compile Update="Pages\BattlePage.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Pages\BluePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Pages\ShipPlacementPage.xaml.cs">
@@ -85,10 +89,6 @@
 
   <ItemGroup>
     <Page Update="Pages\BattlePage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Pages\BluePage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

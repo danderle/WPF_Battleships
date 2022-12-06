@@ -23,8 +23,6 @@ public class ApplicationPagesConverter : BaseValueConverter<ApplicationPagesConv
 
             case ApplicationPages.BattlePage:
                 return new BattlePage();
-            case ApplicationPages.Blue:
-                return new BluePage();
             default:
                 Debugger.Break();
                 return null;

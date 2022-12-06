@@ -1,4 +1,4 @@
-﻿namespace BattleshipServer;
+﻿namespace BattleshipServer.Core;
 
 public class ChallengeAnswerMessage
 {

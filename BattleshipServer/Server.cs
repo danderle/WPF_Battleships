@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using BattleshipServer.Core;
+using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 
@@ -15,13 +16,12 @@ public class Server
 
 	private void Run()
 	{
-		//fhfh
-		Console.WriteLine("Battleship Server online!");
+		Console.WriteLine($"[{DateTime.Now}]: Battleship Server online!");
 
 		TcpListener listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8080);
 		listener.Start();
 
-		Console.WriteLine("Listening for incomming connections on localhost");
+		Console.WriteLine($"[{DateTime.Now}]: Listening for incomming connections on localhost");
 
 		while (true)
 		{

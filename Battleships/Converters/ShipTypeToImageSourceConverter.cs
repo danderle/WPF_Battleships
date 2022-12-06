@@ -1,4 +1,4 @@
-﻿using BattleshipServer;
+﻿using BattleshipServer.Core;
 using System;
 using System.Diagnostics;
 using System.Globalization;

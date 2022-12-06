@@ -1,7 +1,6 @@
-﻿using BattleshipServer;
+﻿using BattleshipServer.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
@@ -189,18 +188,6 @@ internal partial class MainMenuViewModel : ObservableObject
     {
 		DeniedChallenge = false;
 		OpenChallenge = false;
-    }
-
-    [RelayCommand]
-    private void Page()
-    {
-		Inject.Application.CurrentPage = ApplicationPages.Blue;
-    }
-
-    [RelayCommand]
-    private void Back()
-    {
-        Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
     }
 
     #endregion

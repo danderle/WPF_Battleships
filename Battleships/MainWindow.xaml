@@ -49,9 +49,12 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Button Content="C"
-                                                    Command="{Binding SystemMenuCommand}"
-                                                    Style="{StaticResource SystemMenuButton}"/>
+                                            <Button Command="{Binding SystemMenuCommand}"
+                                                    Style="{StaticResource SystemMenuButton}">
+                                                <Button.Background>
+                                                    <ImageBrush ImageSource="app.ico"/>
+                                                </Button.Background>
+                                            </Button>
 
                                             <TextBlock Grid.ColumnSpan="3"
                                                        Text="Battleships"

@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 
-namespace BattleshipServer;
+namespace BattleshipServer.Core;
 
 public class PacketReader : BinaryReader
 {

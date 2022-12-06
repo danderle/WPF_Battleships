@@ -19,9 +19,6 @@
                 Command="{Binding CreateNewUserCommand}"
                 Style="{StaticResource BaseButton}"
                 Margin="0 25"/>
-
-        <Button Content="go to page"
-                Command="{Binding PageCommand}"/>
     </StackPanel>
 
 </UserControl>

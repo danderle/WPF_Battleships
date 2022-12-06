@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace BattleshipServer;
+namespace BattleshipServer.Core;
 
 public class PacketBuilder
 {
