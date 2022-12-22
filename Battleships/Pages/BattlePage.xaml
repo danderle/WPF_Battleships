@@ -66,5 +66,8 @@
                                DataContext="{Binding}"
                                Visibility="{Binding GameOver, Converter={local:BoolToVisibilityConverter}}"/>
 
+        <local:ClientDisconnectedControl Grid.RowSpan="2"
+                                         Grid.ColumnSpan="2" 
+                                         Visibility="{Binding OpponentDisconnected, Converter={local:BoolToVisibilityConverter}}"/>
     </Grid>
 </local:AnimationPage>

@@ -15,11 +15,14 @@ internal partial class MainMenuViewModel : ObservableObject
 
 	private object _lock = new object();
 
-	#endregion
+    #endregion
 
-	#region Properties
+    #region Properties
 
-	[ObservableProperty]
+    [ObservableProperty]
+    private bool opponentDisconnected;
+
+    [ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(CreateNewUserCommand))]
 	private string username;
 
@@ -52,18 +55,34 @@ internal partial class MainMenuViewModel : ObservableObject
 	public MainMenuViewModel()
 	{
 		BindingOperations.EnableCollectionSynchronization(Users, _lock);
-		Inject.Application.Server.NewUserAction = NewConnection;
+        Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
+        Inject.Application.Server.NewUserAction = NewConnection;
 		Inject.Application.Server.ChallengePlayerAction = ChallengedByPlayer;
 		Inject.Application.Server.ChallengeAnswerAction = ChallengeAnswer;
         Inject.Application.Server.BusyAction = Busy;
 
 		Inject.Application.Server.ConnectToServer();
     }
-	#endregion
+    #endregion
 
-	#region Server actions
+    #region Server actions
 
-	private void Busy(string message)
+    private void DisconnectedClientAction(string disconnectedUsername)
+    {
+		var user = Users.FirstOrDefault(item => item.Name == disconnectedUsername);
+		if (user != null)
+		{
+			Users.Remove(user);
+            OpponentDisconnected = true;
+        }
+
+        if (Opponent != null && Opponent.Name == disconnectedUsername)
+        {
+			//todo
+        }
+    }
+
+    private void Busy(string message)
 	{
 		User user = JsonSerializer.Deserialize<User>(message);
 		var update = Users.FirstOrDefault(item => item.Name == user.Name);

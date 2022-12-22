@@ -72,6 +72,9 @@ internal class Client
                     case OpCodes.GameOver:
                         Server.BroadCastGameOver(message);
                         break;
+                    case OpCodes.WhoStarts:
+                        Server.BroadCastWhoStarts(message);
+                        break;
                     default:
                         Debugger.Break();
                         break;
@@ -81,6 +84,7 @@ internal class Client
             {
                 Console.WriteLine(ex.Message);
                 TcpSocket.Close();
+                Server.BroadCastDisconnection(User.Name);
                 break;
             }
         }

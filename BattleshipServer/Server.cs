@@ -1,6 +1,7 @@
 ﻿using BattleshipServer.Core;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 using System.Text.Json;
 
 namespace BattleshipServer;
@@ -8,6 +9,8 @@ namespace BattleshipServer;
 public class Server
 {
     private static List<Client> _users = new List<Client>();
+
+	private static Random _random = new Random();
 
 	public Server()
 	{
@@ -126,31 +129,32 @@ public class Server
 			Console.WriteLine($"[{DateTime.Now}]: Waiting for {otherPlayer.User.Name}");
 		}
 
-		CreateAndSendPacket(otherPlayer, OpCodes.FinishedSetup, message);
-
 		if (finishedPlayer.User.HasFinishedSetup &&
 			otherPlayer.User.HasFinishedSetup)
 		{
 			Console.WriteLine($"[{DateTime.Now}]: Both players, {finishedPlayer.User.Name} vs. {otherPlayer.User.Name}, have finished ship placement");
 
-			Random random = new Random();
-			var player = random.Next(0, 2);
+			var player = _random.Next(0, 2);
 			if (player == 0)
 			{
-				CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
-				CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, finishedPlayer.User.Name);
-				Console.WriteLine($"[{DateTime.Now}]: {finishedPlayer.User.Name} starts the game");
+				finishedPlayer.User.Starts = true;
+				otherPlayer.User.Starts = false;
+
+                Console.WriteLine($"[{DateTime.Now}]: {finishedPlayer.User.Name} starts the game");
             }
 			else
-			{
-                CreateAndSendPacket(finishedPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
-                CreateAndSendPacket(otherPlayer, OpCodes.WhoStarts, otherPlayer.User.Name);
+            {
+                finishedPlayer.User.Starts = false;
+                otherPlayer.User.Starts = true;
+
                 Console.WriteLine($"[{DateTime.Now}]: {otherPlayer.User.Name} starts the game");
             }
 			
 			finishedPlayer.User.HasFinishedSetup = false;
 			otherPlayer.User.HasFinishedSetup = false;
 		}
+
+		CreateAndSendPacket(otherPlayer, OpCodes.FinishedSetup, message);
     }
 
     internal static void BroadCastShotFired(string message)
@@ -193,6 +197,28 @@ public class Server
         CreateAndSendPacket(winner, OpCodes.GameOver, message);
         CreateAndSendPacket(loser, OpCodes.GameOver, message);
     }
+
+	internal static void BroadCastWhoStarts(string name)
+	{
+        var player = _users.FirstOrDefault(item => item.User.Name == name);
+
+		Console.WriteLine($"[{DateTime.Now}]: {player.User.Name} starts the game -> {player.User.Starts}");
+
+		CreateAndSendPacket(player, OpCodes.WhoStarts, player.User.Starts.ToString());
+    }
+
+	internal static void BroadCastDisconnection(string disconnectedUsername)
+	{
+		var disconnectedClient = _users.FirstOrDefault(item => item.User.Name == disconnectedUsername);
+		_users.Remove(disconnectedClient);
+		
+		Console.WriteLine($"[{DateTime.Now}]: {disconnectedUsername} connection has been closed and removed from active user list.");
+
+        foreach (var user in _users)
+		{
+			CreateAndSendPacket(user, OpCodes.DisconnectedClient, disconnectedUsername);
+		}
+	}
 
 	#endregion
 }

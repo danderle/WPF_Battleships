@@ -58,6 +58,9 @@
     <Compile Update="Pages\ShipPlacementPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\ClientDisconnectedControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\PageHost.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -105,6 +108,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\Texts.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ClientDisconnectedControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

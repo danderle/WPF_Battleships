@@ -13,4 +13,5 @@ public enum OpCodes
     ShipDestroyed,
     GameOver,
     WhoStarts,
+    DisconnectedClient,
 }

@@ -19,6 +19,9 @@ namespace Battleships
         #region Properties
 
         [ObservableProperty]
+        private bool opponentDisconnected;
+
+        [ObservableProperty]
         private bool waitingMessageVisible;
         
         [ObservableProperty]
@@ -32,6 +35,7 @@ namespace Battleships
 
         public ShipPlacementViewModel()
         {
+            Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
             Inject.Application.Server.FinishedSetupAction = FinishedSetup;
             ShipGrid.Ships = new System.Collections.ObjectModel.ObservableCollection<ShipViewModel>()
             {
@@ -46,6 +50,14 @@ namespace Battleships
         #endregion
 
         #region Server Actions
+
+        private void DisconnectedClientAction(string disconnectedUsername)
+        {
+            if (OpponentName == disconnectedUsername)
+            {
+                OpponentDisconnected = true;
+            }
+        }
 
         public void FinishedSetup(string message)
         {

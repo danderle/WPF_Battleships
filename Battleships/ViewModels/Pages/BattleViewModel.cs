@@ -16,6 +16,9 @@ namespace Battleships
         #region Properties
 
         [ObservableProperty]
+        private bool opponentDisconnected;
+
+        [ObservableProperty]
         private bool gameOver;
 
         [ObservableProperty]
@@ -45,16 +48,33 @@ namespace Battleships
 
         public BattleViewModel()
         {
+            Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
             Inject.Application.Server.GameoverAction = GameOverAction;
+            Inject.Application.Server.WhoStartsAction = WhoStartsAction;
             MyHitGrid.SwitchTurn = SwitchTurn;
             EnemyHitGrid.SwitchTurn = SwitchTurn;
             Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
             myShipGrid.Ships = new ObservableCollection<ShipViewModel>(Inject.Application.MySetShips);
-            MyTurn = Inject.Application.Istart;
+            Inject.Application.Server.CreateAndSendPacket(OpCodes.WhoStarts, MyName);
+
         }
+
         #endregion
 
         #region Server Actions
+
+        private void DisconnectedClientAction(string disconnectedUsername)
+        {
+            if (OpponentName == disconnectedUsername)
+            {
+                OpponentDisconnected = true;
+            }
+        }
+
+        private void WhoStartsAction(string start)
+        {
+            MyTurn = start == bool.TrueString;
+        }
 
         private void GameOverAction(string message)
         {
@@ -83,6 +103,7 @@ namespace Battleships
             {
                 Name = MyName,
                 IsBusy = false,
+                Starts = false
             };
 
             string message = JsonSerializer.Serialize(user);

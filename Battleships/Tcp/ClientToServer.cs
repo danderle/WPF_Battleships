@@ -24,6 +24,7 @@ public class ClientToServer
     public Action<string> ShipDestroyedAction;
     public Action<string> GameoverAction;
     public Action<string> WhoStartsAction;
+    public Action<string> DisconnectedClientAction;
 
     public ClientToServer()
     {
@@ -83,6 +84,9 @@ public class ClientToServer
                         break;
                     case OpCodes.WhoStarts:
                         WhoStartsAction?.Invoke(message);
+                        break;
+                    case OpCodes.DisconnectedClient:
+                        DisconnectedClientAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();
