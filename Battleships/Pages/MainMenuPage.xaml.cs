@@ -10,6 +10,8 @@ public partial class MainMenuPage : AnimationPage
     public MainMenuPage()
     {
         InitializeComponent();
-        DataContext = Inject.Service<MainMenuViewModel>();
+        var vm = Inject.Service<MainMenuViewModel>();
+        vm.UpdateUserList();
+        DataContext = vm;
     }
 }

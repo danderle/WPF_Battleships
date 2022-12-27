@@ -75,6 +75,9 @@ internal class Client
                     case OpCodes.WhoStarts:
                         Server.BroadCastWhoStarts(message);
                         break;
+                    case OpCodes.UpdateUserList:
+                        Server.BroadCastUserList(message);
+                        break;
                     default:
                         Debugger.Break();
                         break;

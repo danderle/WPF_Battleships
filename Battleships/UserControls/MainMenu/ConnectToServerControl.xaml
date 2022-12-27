@@ -10,6 +10,11 @@
 
     <StackPanel HorizontalAlignment="Center"
                 Background="{StaticResource BlackBrush}">
+
+        <TextBlock Text="Create user"
+                Foreground="{StaticResource MediumBlueBrush}"
+                Style="{StaticResource LargeText}"
+                Margin="25"/>
         <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
                  Tag="Enter a username"
                         Style="{StaticResource BaseTextBox}"

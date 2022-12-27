@@ -1,11 +1,14 @@
 ﻿using BattleshipServer.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Data;
+using System.Xml.Linq;
 
 namespace Battleships;
 
@@ -29,6 +32,9 @@ internal partial class MainMenuViewModel : ObservableObject
     [ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(ChallengeCommand))]
     private UserViewModel opponent;
+
+    [ObservableProperty]
+    private string opponentName;
 
     [ObservableProperty]
     private bool connected;
@@ -60,12 +66,28 @@ internal partial class MainMenuViewModel : ObservableObject
 		Inject.Application.Server.ChallengePlayerAction = ChallengedByPlayer;
 		Inject.Application.Server.ChallengeAnswerAction = ChallengeAnswer;
         Inject.Application.Server.BusyAction = Busy;
+        Inject.Application.Server.UpdateUserListAction = UpdateUserListAction;
 
-		Inject.Application.Server.ConnectToServer();
+        Inject.Application.Server.ConnectToServer();
     }
+
     #endregion
 
     #region Server actions
+
+    private void UpdateUserListAction(string userList)
+    {
+		var list = JsonSerializer.Deserialize<List<User>>(userList);
+
+		for (int index = Users.Count - 1; index >= 0; index--)
+		{
+			var user = list.FirstOrDefault(item => item.Name == Users[index].Name);
+			if (user == null)
+			{
+				Users.RemoveAt(index);
+			}
+		}
+    }
 
     private void DisconnectedClientAction(string disconnectedUsername)
     {
@@ -73,12 +95,12 @@ internal partial class MainMenuViewModel : ObservableObject
 		if (user != null)
 		{
 			Users.Remove(user);
-            OpponentDisconnected = true;
         }
 
         if (Opponent != null && Opponent.Name == disconnectedUsername)
         {
-			//todo
+			OpponentName = Opponent.Name;
+            OpponentDisconnected = true;
         }
     }
 
@@ -114,7 +136,6 @@ internal partial class MainMenuViewModel : ObservableObject
 	private void ChallengedByPlayer(string message)
 	{
 		ChallengeMessage msg = JsonSerializer.Deserialize<ChallengeMessage>(message);
-		Challenged = true;
 		Application.Current.Dispatcher.BeginInvoke(() =>
 		{
 			Opponent = Users.FirstOrDefault(user => user.Name == msg.Challenger);
@@ -146,6 +167,23 @@ internal partial class MainMenuViewModel : ObservableObject
     #endregion
 
     #region Command methods
+
+    [RelayCommand]
+    public void Continue()
+    {
+        var user = new User()
+		{
+            Name = Username,
+            IsBusy = false,
+            Starts = false
+        };
+
+        string message = JsonSerializer.Serialize(user);
+        Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+		Challenged = false;
+		OpenChallenge = false;
+		OpponentDisconnected = false;
+    }
 
     [RelayCommand(CanExecute = nameof(CanCreateNewUser))]
 	private void CreateNewUser()
@@ -217,6 +255,14 @@ internal partial class MainMenuViewModel : ObservableObject
 	{
 		Inject.Application.OpponentName = Opponent.Name;
         Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
+    }
+
+    internal void UpdateUserList()
+    {
+		if (!string.IsNullOrEmpty(Username))
+		{
+			Inject.Application.Server.CreateAndSendPacket(OpCodes.UpdateUserList, Username);
+		}
     }
     #endregion
 }

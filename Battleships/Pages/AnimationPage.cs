@@ -1,15 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 
 namespace Battleships
 {
     public class AnimationPage : Page
     {
-        private const float _animationSeconds = 0.8f;
+        private const float _animationSeconds = 0.3f;
         public bool IsOldPage { get; set; }
         public bool IsFirstPage { get; set; }
 

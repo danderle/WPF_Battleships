@@ -7,41 +7,33 @@
       mc:Ignorable="d" 
       Title="MainMenuPage">
     
-    <Grid Background="{StaticResource BlackBrush}">
+    <Grid Background="{StaticResource BlackBrush}"
+          Margin="0 50 0 0">
         
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <TextBlock Text="Create user"
-                Foreground="{StaticResource MediumBlueBrush}"
-                Style="{StaticResource LargeText}"
-                Margin="25"/>
-
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <local:ConnectToServerControl Grid.Row="1"
-                                          DataContext="{Binding}" 
-                                          Visibility="{Binding Connected, Converter={local:InverseBoolToVisibilityConverter}}"/>
+            <Grid VerticalAlignment="Center">
+                <local:ConnectToServerControl DataContext="{Binding}" 
+                                              Visibility="{Binding Connected, Converter={local:InverseBoolToVisibilityConverter}}"/>
 
-            <local:ChallengeControl Grid.Row="1"
-                                    DataContext="{Binding}"
+                <local:ChallengeControl DataContext="{Binding}"
                                     Visibility="{Binding Connected, Converter={local:BoolToVisibilityConverter}}"/>
 
-            <local:AcceptChallengeControl Grid.Row="1"
-                                          DataContext="{Binding}"
+                <local:AcceptChallengeControl DataContext="{Binding}"
                                           Visibility="{Binding Challenged, Converter={local:BoolToVisibilityConverter}}"/>
 
-            <local:WaitingChallengeControl Grid.Row="1"
-                                           DataContext="{Binding}"
+                <local:WaitingChallengeControl DataContext="{Binding}"
                                            Visibility="{Binding OpenChallenge, Converter={local:BoolToVisibilityConverter}}"/>
 
+                <local:ClientDisconnectedControl DataContext="{Binding}"
+                                         Visibility="{Binding OpponentDisconnected, Converter={local:BoolToVisibilityConverter}}"/>
+            </Grid>
             <local:UsersListControl Grid.Column="1"  
+                                    Grid.Row="1"
                                     DataContext="{Binding}" />
 
             <Border Grid.Column="1"

@@ -68,6 +68,7 @@
 
         <local:ClientDisconnectedControl Grid.RowSpan="2"
                                          Grid.ColumnSpan="2" 
+                                         DataContext="{Binding}"
                                          Visibility="{Binding OpponentDisconnected, Converter={local:BoolToVisibilityConverter}}"/>
     </Grid>
 </local:AnimationPage>

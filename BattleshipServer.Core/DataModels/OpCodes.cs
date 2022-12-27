@@ -14,4 +14,5 @@ public enum OpCodes
     GameOver,
     WhoStarts,
     DisconnectedClient,
+    UpdateUserList,
 }

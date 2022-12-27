@@ -75,7 +75,7 @@ public class Server
     public static void BroadCastChallenge(string message)
     {
         ChallengeMessage msg = JsonSerializer.Deserialize<ChallengeMessage>(message);
-		var defender = _users.FirstOrDefault(user => user.User.Name == msg.Defender);
+		var defender = FindClient(msg.Defender);
 		defender.User.IsBusy = true;
 		CreateAndSendPacket(defender, OpCodes.ChallengePlayer, message);
 
@@ -85,8 +85,8 @@ public class Server
 	internal static void BroadCastChallengeAnswer(string message)
 	{
         ChallengeAnswerMessage msg = JsonSerializer.Deserialize<ChallengeAnswerMessage>(message);
-        var challenger = _users.FirstOrDefault(user => user.User.Name == msg.Challenger);
-        var defender = _users.FirstOrDefault(user => user.User.Name == msg.Defender);
+        var challenger = FindClient(msg.Challenger);
+        var defender = FindClient(msg.Defender);
         CreateAndSendPacket(challenger, OpCodes.ChallengeAnswer, message);
 
 		if (msg.Accept)
@@ -115,13 +115,12 @@ public class Server
 		}
     }
 
-
     internal static void BroadCastFinishedSetup(string message)
     {
         var finishedMessage = JsonSerializer.Deserialize<ChallengeMessage>(message);
-		var finishedPlayer = _users.FirstOrDefault(item => item.User.Name == finishedMessage.Challenger);
+		var finishedPlayer = FindClient(finishedMessage.Challenger);
 		finishedPlayer.User.HasFinishedSetup = true;
-		var otherPlayer = _users.FirstOrDefault(item => item.User.Name == finishedMessage.Defender);
+		var otherPlayer = FindClient(finishedMessage.Defender);
 
 		Console.WriteLine($"[{DateTime.Now}]: {finishedPlayer.User.Name} has finished ship setup");
 		if (!otherPlayer.User.HasFinishedSetup)
@@ -160,7 +159,7 @@ public class Server
     internal static void BroadCastShotFired(string message)
     {
 		var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
-		var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
+		var target = FindClient(shotFired.Opponent);
 
 		Console.WriteLine($"[{DateTime.Now}]: Shot fired at {target.User.Name}");
 		CreateAndSendPacket(target, OpCodes.ShotFired, message);
@@ -169,7 +168,7 @@ public class Server
 	internal static void BroadCastShotConfirmation(string message)
 	{
         var shotFired = JsonSerializer.Deserialize<ShotFiredMessage>(message);
-        var target = _users.FirstOrDefault(item => item.User.Name == shotFired.Opponent);
+        var target = FindClient(shotFired.Opponent);
 
         Console.WriteLine($"[{DateTime.Now}]: Shot confirmation for {target.User.Name}");
 		Console.WriteLine($"[{DateTime.Now}]: Shot is a " + (shotFired.Hit? "hit" : "miss"));
@@ -179,7 +178,7 @@ public class Server
     internal static void BroadCastShipDestroyed(string message)
     {
         var shipDestroyed = JsonSerializer.Deserialize<ShipDestroyedMessage>(message);
-        var target = _users.FirstOrDefault(item => item.User.Name == shipDestroyed.Opponent);
+        var target = FindClient(shipDestroyed.Opponent);
 
         Console.WriteLine($"[{DateTime.Now}]: User {target.User.Name} has destroyed a {shipDestroyed.ShipType}");
         CreateAndSendPacket(target, OpCodes.ShipDestroyed, message);
@@ -188,8 +187,8 @@ public class Server
 	internal static void BroadCastGameOver(string message)
 	{
         var gameOver = JsonSerializer.Deserialize<GameOverMessage>(message);
-        var winner = _users.FirstOrDefault(item => item.User.Name == gameOver.Winner);
-        var loser = _users.FirstOrDefault(item => item.User.Name == gameOver.Loser);
+		var winner = FindClient(gameOver.Winner);
+        var loser = FindClient(gameOver.Loser);
 
         Console.WriteLine($"[{DateTime.Now}]: {winner.User.Name} vs {loser.User.Name } result:");
         Console.WriteLine($"[{DateTime.Now}]: {winner.User.Name} is the WINNER!");
@@ -200,7 +199,7 @@ public class Server
 
 	internal static void BroadCastWhoStarts(string name)
 	{
-        var player = _users.FirstOrDefault(item => item.User.Name == name);
+		var player = FindClient(name);
 
 		Console.WriteLine($"[{DateTime.Now}]: {player.User.Name} starts the game -> {player.User.Starts}");
 
@@ -209,7 +208,7 @@ public class Server
 
 	internal static void BroadCastDisconnection(string disconnectedUsername)
 	{
-		var disconnectedClient = _users.FirstOrDefault(item => item.User.Name == disconnectedUsername);
+		var disconnectedClient = FindClient(disconnectedUsername);
 		_users.Remove(disconnectedClient);
 		
 		Console.WriteLine($"[{DateTime.Now}]: {disconnectedUsername} connection has been closed and removed from active user list.");
@@ -219,6 +218,29 @@ public class Server
 			CreateAndSendPacket(user, OpCodes.DisconnectedClient, disconnectedUsername);
 		}
 	}
+
+    internal static void BroadCastUserList(string username)
+    {
+		var list = new List<User>();
+        foreach (var client in _users)
+		{
+			list.Add(client.User);
+            Console.WriteLine($"[{DateTime.Now}]: {client.User.Name} is still connected");
+        }
+
+		var message = JsonSerializer.Serialize(list);
+		var user = FindClient(username);
+		CreateAndSendPacket(user, OpCodes.UpdateUserList, message);
+    }
+
+	#endregion
+
+	#region Private Helpers
+
+	private static Client FindClient(string name)
+	{
+		return _users.FirstOrDefault(item => item.User.Name == name);
+    }
 
 	#endregion
 }

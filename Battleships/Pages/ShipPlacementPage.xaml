@@ -44,5 +44,8 @@
                 <Run Text="to finish setup..."/>
             </TextBlock>
         </Border>
+
+        <local:ClientDisconnectedControl DataContext="{Binding}"
+                                         Visibility="{Binding OpponentDisconnected, Converter={local:BoolToVisibilityConverter}}"/>
     </Grid>
 </local:AnimationPage>

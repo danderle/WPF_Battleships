@@ -25,6 +25,7 @@ public class ClientToServer
     public Action<string> GameoverAction;
     public Action<string> WhoStartsAction;
     public Action<string> DisconnectedClientAction;
+    public Action<string> UpdateUserListAction;
 
     public ClientToServer()
     {
@@ -87,6 +88,9 @@ public class ClientToServer
                         break;
                     case OpCodes.DisconnectedClient:
                         DisconnectedClientAction?.Invoke(message);
+                        break;
+                    case OpCodes.UpdateUserList:
+                        UpdateUserListAction?.Invoke(message);
                         break;
                     default:
                         Debugger.Break();

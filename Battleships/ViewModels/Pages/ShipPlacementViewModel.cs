@@ -73,6 +73,20 @@ namespace Battleships
         #region Command method
 
         [RelayCommand]
+        public void Continue()
+        {
+            var user = new User()
+            {
+                Name = _myName,
+                IsBusy = false,
+                Starts = false
+            };
+
+            string message = JsonSerializer.Serialize(user);
+            Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
+        }
+        [RelayCommand]
         public void StartGame()
         {
             var message = JsonSerializer.Serialize(new ChallengeMessage(_myName, OpponentName));
