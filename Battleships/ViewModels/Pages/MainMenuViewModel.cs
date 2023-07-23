@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Xml.Linq;
@@ -69,13 +70,14 @@ internal partial class MainMenuViewModel : ObservableObject
         Inject.Application.Server.UpdateUserListAction = UpdateUserListAction;
         //Inject.Application.Server.ConnectToServer();
 
-        Inject.Application.SignalR.DisconnectedClientAction = DisconnectedClientAction;
-        Inject.Application.SignalR.NewUserAction = NewUser;
-        Inject.Application.SignalR.ChallengePlayerAction = ChallengedByPlayer;
-        Inject.Application.SignalR.ChallengeAnswerAction = ChallengeAnswer;
-        Inject.Application.SignalR.BusyAction = Busy;
-        Inject.Application.SignalR.UpdateUserListAction = UpdateUserList;
         Inject.Application.SignalR.ConnectToServer();
+        Inject.Application.SignalR.ReceiveNewUserAction = NewUser;
+        Inject.Application.SignalR.ReceiveUpdateUserListAction = UpdateUserList;
+        Inject.Application.SignalR.ReceiveChallengeAction = ReceivedChallenge;
+        Inject.Application.SignalR.ReceiveUserUpdateAction = ReceiveUserUpdate;
+        Inject.Application.SignalR.ReceiveChallengeAnswerAction = ReceiveChallengeAnswer;
+
+        Inject.Application.SignalR.DisconnectedClientAction = DisconnectedClientAction;
     }
 
     #endregion
@@ -175,6 +177,51 @@ internal partial class MainMenuViewModel : ObservableObject
 
     #region SignalR actions
 
+    private async void ReceiveChallengeAnswer(bool answer)
+    {
+        if (answer)
+        {
+            OpenChallenge = false;
+            GoToPlacementPage();
+        }
+        else
+        {
+            DeniedChallenge = true;
+            var userUpdate = new User
+            {
+                IsBusy = false
+            };
+
+            await Inject.Application.SignalR.SendUserUpdate(userUpdate);
+        }
+
+        WaitingForChallengeAnswer = false;
+    }
+
+    private void ReceiveUserUpdate(User user)
+    {
+        var update = Users.FirstOrDefault(item => item.ConnectionId == user.ConnectionId);
+        update.IsBusy = user.IsBusy;
+    }
+
+    private async void ReceivedChallenge(string challengerId)
+    {
+        await Application.Current.Dispatcher.BeginInvoke(() =>
+        {
+            Opponent = Users.FirstOrDefault(user => user.ConnectionId == challengerId);
+            Opponent.IsBusy = true;
+        });
+
+        Challenged = true;
+        Users.FirstOrDefault(user => user.Name == Username).IsBusy = true;
+        var userUpdate = new User()
+        {
+            IsBusy = true
+        };
+
+        await Inject.Application.SignalR.SendUserUpdate(userUpdate);
+    }
+
     private void NewUser(User newUser)
     {
         if (!Users.Any(user => user.ConnectionId == newUser.ConnectionId))
@@ -233,7 +280,7 @@ internal partial class MainMenuViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanCreateNewUser))]
-	private async void CreateNewUser()
+	private async Task CreateNewUser()
 	{
 		//Inject.Application.Server.CreateAndSendPacket(OpCodes.NewUser, Username);
 		//Inject.Application.Server.Username = Username;
@@ -252,24 +299,30 @@ internal partial class MainMenuViewModel : ObservableObject
 	}
 
 	[RelayCommand(CanExecute = nameof(CanChallenge))]
-    private void Challenge()
+    private async Task Challenge()
     {
-		var message = JsonSerializer.Serialize(new ChallengeMessage(Username, Opponent.Name));
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
+        //var message = JsonSerializer.Serialize(new ChallengeMessage(Username, Opponent.Name));
+        //      Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengePlayer, message);
+
+        await Inject.Application.SignalR.SendChallenge(Opponent.ConnectionId);
+
 		WaitingForChallengeAnswer = true;
 		OpenChallenge = true;
      
 		var user = Users.FirstOrDefault(user => user.Name == Username);
 		user.IsBusy = true;
 
-		var u = new User()
+		var userUpdate = new User()
 		{
 			Name = user.Name,
+            ConnectionId = user.ConnectionId,
 			IsBusy = user.IsBusy
 		};
 
-		message = JsonSerializer.Serialize(u);
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+        await Inject.Application.SignalR.SendUserUpdate(userUpdate);
+
+		//message = JsonSerializer.Serialize(u);
+  //      Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
     }
 
     private bool CanChallenge()
@@ -278,20 +331,29 @@ internal partial class MainMenuViewModel : ObservableObject
 	}
 
 	[RelayCommand]
-    private void Accept()
+    private async Task Accept()
     {
-		var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+        //var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, true));
+        //      Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+
+        await Inject.Application.SignalR.SendChallengeAnswer(Opponent.ConnectionId, true);
 		GoToPlacementPage();
 		Challenged = false;
     }
 
     [RelayCommand]
-    private void Deny()
+    private async Task Deny()
     {
-        var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, false));
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
-		Challenged = false;
+        //var msg = JsonSerializer.Serialize(new ChallengeAnswerMessage(Opponent.Name, Username, false));
+        //Inject.Application.Server.CreateAndSendPacket(OpCodes.ChallengeAnswer, msg);
+        await Inject.Application.SignalR.SendChallengeAnswer(Opponent.ConnectionId, false);
+        var userUpdate = new User
+        {
+            IsBusy = false
+        };
+        
+        await Inject.Application.SignalR.SendUserUpdate(userUpdate);
+        Challenged = false;
     }
 
     [RelayCommand]

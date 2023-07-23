@@ -14,4 +14,14 @@ public static class Server
             Users.Add(user);
         }
     }
+
+    internal static void Update(User user)
+    {
+        var found = Users.FirstOrDefault(item => item.ConnectionId == user.ConnectionId);
+        if (found != null)
+        {
+            found.IsBusy = user.IsBusy;
+            found.HasFinishedSetup = user.HasFinishedSetup;
+        }
+    }
 }
