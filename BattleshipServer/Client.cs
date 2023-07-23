@@ -18,7 +18,7 @@ internal class Client
         TcpSocket = tcpClient;
         _packetReader = new PacketReader(TcpSocket.GetStream());
 
-        User.Id = Guid.NewGuid();
+        User.ConnectionId = Guid.NewGuid().ToString();
         User.Name = Default;
 
         var opCode = _packetReader.ReadByte();

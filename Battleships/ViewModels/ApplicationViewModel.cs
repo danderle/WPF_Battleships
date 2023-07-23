@@ -11,20 +11,12 @@ namespace Battleships
         public string MyName { get; set; }
         public string OpponentName { get; set; }
         public ClientToServer Server { get; private set; } = new ClientToServer();
+        public SignalRServer SignalR { get; private set; } = new SignalRServer();
         public List<ShipViewModel> MySetShips { get; set; }
 
         [ObservableProperty]
         private ApplicationPages currentPage = ApplicationPages.MainMenuPage;
 
         #endregion
-
-        #region Constructor
-
-        public ApplicationViewModel()
-        {
-        }
-
-        #endregion
-
     }
 }

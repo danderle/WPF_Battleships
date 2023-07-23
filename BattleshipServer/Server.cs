@@ -14,7 +14,7 @@ public class Server
 
 	public Server()
 	{
-		Run();
+		//Run();
 	}
 
 	private void Run()

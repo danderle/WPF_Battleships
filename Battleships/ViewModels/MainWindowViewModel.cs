@@ -35,14 +35,6 @@ namespace Battleships
 
         #endregion
 
-        #region Constructor
-
-        public MainWindowViewModel()
-        {
-        }
-
-        #endregion
-
         #region Methods
 
         public void SetWindow(MainWindow mainWindow)

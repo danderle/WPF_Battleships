@@ -67,8 +67,15 @@ internal partial class MainMenuViewModel : ObservableObject
 		Inject.Application.Server.ChallengeAnswerAction = ChallengeAnswer;
         Inject.Application.Server.BusyAction = Busy;
         Inject.Application.Server.UpdateUserListAction = UpdateUserListAction;
+        //Inject.Application.Server.ConnectToServer();
 
-        Inject.Application.Server.ConnectToServer();
+        Inject.Application.SignalR.DisconnectedClientAction = DisconnectedClientAction;
+        Inject.Application.SignalR.NewUserAction = NewUser;
+        Inject.Application.SignalR.ChallengePlayerAction = ChallengedByPlayer;
+        Inject.Application.SignalR.ChallengeAnswerAction = ChallengeAnswer;
+        Inject.Application.SignalR.BusyAction = Busy;
+        Inject.Application.SignalR.UpdateUserListAction = UpdateUserList;
+        Inject.Application.SignalR.ConnectToServer();
     }
 
     #endregion
@@ -166,6 +173,46 @@ internal partial class MainMenuViewModel : ObservableObject
 
     #endregion
 
+    #region SignalR actions
+
+    private void NewUser(User newUser)
+    {
+        if (!Users.Any(user => user.ConnectionId == newUser.ConnectionId))
+        {
+            var user = new UserViewModel()
+            {
+                Name = newUser.Name,
+                ConnectionId = newUser.ConnectionId
+            };
+
+            lock (_lock)
+            {
+                Users.Add(user);
+            }
+        }
+
+        if (Username == newUser.Name)
+        {
+            Connected = true;
+            Inject.Application.MyName = Username;
+        }
+    }
+
+
+    private void UpdateUserList(List<User> list)
+    {
+        for (int index = Users.Count - 1; index >= 0; index--)
+        {
+            var user = list.FirstOrDefault(item => item.ConnectionId == Users[index].ConnectionId);
+            if (user == null)
+            {
+                Users.RemoveAt(index);
+            }
+        }
+    }
+
+    #endregion
+
     #region Command methods
 
     [RelayCommand]
@@ -186,10 +233,17 @@ internal partial class MainMenuViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanCreateNewUser))]
-	private void CreateNewUser()
+	private async void CreateNewUser()
 	{
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.NewUser, Username);
-        Inject.Application.Server.Username = Username;
+		//Inject.Application.Server.CreateAndSendPacket(OpCodes.NewUser, Username);
+		//Inject.Application.Server.Username = Username;
+
+		var user = new User
+		{
+			Name = Username,
+		};
+
+		await Inject.Application.SignalR.SendNewUserAsync(user);
 	}
 
 	private bool CanCreateNewUser()
