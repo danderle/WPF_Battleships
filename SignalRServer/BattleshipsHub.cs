@@ -27,4 +27,15 @@ public class BattleshipsHub : Hub
     {
         await Clients.Client(opponentId).SendAsync("ReceiveChallengeAnswer", answer);
     }
+
+    public async Task SendFinishedSetup(string senderId, string opponentId)
+    {
+        Server.FinishedSetup(senderId, opponentId);
+        await Clients.Client(opponentId).SendAsync("ReceiveFinishedSetup", senderId);
+    }
+
+    public async Task SendWhoStarts(string senderId)
+    {
+        await Clients.Client(senderId).SendAsync("ReceiveWhoStarts", Server.WhoStarts(senderId));
+    }
 }

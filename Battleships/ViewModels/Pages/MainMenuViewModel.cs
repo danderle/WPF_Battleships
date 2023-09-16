@@ -244,8 +244,6 @@ internal partial class MainMenuViewModel : ObservableObject
             Inject.Application.MyName = Username;
         }
     }
-
-
     private void UpdateUserList(List<User> list)
     {
         for (int index = Users.Count - 1; index >= 0; index--)
@@ -370,6 +368,7 @@ internal partial class MainMenuViewModel : ObservableObject
     private void GoToPlacementPage()
 	{
 		Inject.Application.OpponentName = Opponent.Name;
+		Inject.Application.Opponent = Opponent;
         Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
     }
 

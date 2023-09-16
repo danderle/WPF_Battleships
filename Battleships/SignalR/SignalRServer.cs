@@ -29,9 +29,11 @@ public class SignalRServer
     public Action<bool> ReceiveChallengeAnswerAction { get; internal set; }
     public Action<User> ReceiveUserUpdateAction { get; internal set; }
     public Action<List<User>> ReceiveUpdateUserListAction { get; internal set; }
+    public Action<string> ReceiveFinishedSetupAction { get; internal set; }
+    public Action<bool> ReceiveWhoStartsAction { get; internal set; }
 
     #endregion
-    
+
     #region Methods
 
     internal async void ConnectToServer()
@@ -53,6 +55,8 @@ public class SignalRServer
         _hubConnection.On<string>("ReceiveChallenge", connectionId => ReceiveChallengeAction?.Invoke(connectionId));
         _hubConnection.On<User>("ReceiveUserUpdate", user => ReceiveUserUpdateAction?.Invoke(user));
         _hubConnection.On<bool>("ReceiveChallengeAnswer", answer => ReceiveChallengeAnswerAction?.Invoke(answer));
+        _hubConnection.On<string>("ReceiveFinishedSetup", answer => ReceiveFinishedSetupAction?.Invoke(answer));
+        _hubConnection.On<bool>("ReceiveWhoStarts", answer => ReceiveWhoStartsAction?.Invoke(answer));
     }
 
     #endregion
@@ -93,5 +97,20 @@ public class SignalRServer
         }
     }
 
+    internal async Task SendFinishedSetup(string opponentId)
+    {
+        if(_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendFinishedSetup", ConnectionId, opponentId);
+        }
+    }
+
+    internal async Task SendWhoStarts()
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendWhoStarts", ConnectionId);
+        }
+    }
     #endregion
 }

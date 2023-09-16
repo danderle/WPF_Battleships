@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Battleships
 {
@@ -28,6 +29,7 @@ namespace Battleships
         private ShipGridViewModel shipGrid = new ShipGridViewModel();
 
         public string OpponentName => Inject.Application.OpponentName;
+        public UserViewModel Opponent => Inject.Application.Opponent;
 
         #endregion
 
@@ -37,6 +39,8 @@ namespace Battleships
         {
             Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
             Inject.Application.Server.FinishedSetupAction = FinishedSetup;
+
+            Inject.Application.SignalR.ReceiveFinishedSetupAction = ReceiveFinishedSetup;
             ShipGrid.Ships = new System.Collections.ObjectModel.ObservableCollection<ShipViewModel>()
             {
                 new ShipViewModel(ShipTypes.Carrier, 0),
@@ -70,6 +74,19 @@ namespace Battleships
 
         #endregion
 
+        #region SignalR actions
+
+        public void ReceiveFinishedSetup(string message)
+        {
+            _opponentFinished = true;
+            if (WaitingMessageVisible)
+            {
+                GoToBattle();
+            }
+        }
+
+        #endregion
+
         #region Command method
 
         [RelayCommand]
@@ -87,10 +104,12 @@ namespace Battleships
             Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
         }
         [RelayCommand]
-        public void StartGame()
+        public async Task StartGame()
         {
-            var message = JsonSerializer.Serialize(new ChallengeMessage(_myName, OpponentName));
-            Inject.Application.Server.CreateAndSendPacket(OpCodes.FinishedSetup, message);
+            //var message = JsonSerializer.Serialize(new ChallengeMessage(_myName, OpponentName));
+            //Inject.Application.Server.CreateAndSendPacket(OpCodes.FinishedSetup, message);
+
+            await Inject.Application.SignalR.SendFinishedSetup(Opponent.ConnectionId);
             Inject.Application.MySetShips = ShipGrid.Ships.ToList();
             WaitingMessageVisible = true;
 

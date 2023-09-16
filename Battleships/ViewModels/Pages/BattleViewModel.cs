@@ -50,12 +50,15 @@ namespace Battleships
             Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
             Inject.Application.Server.GameoverAction = GameOverAction;
             Inject.Application.Server.WhoStartsAction = WhoStartsAction;
+
+            Inject.Application.SignalR.ReceiveWhoStartsAction = ReceiveWhoStarts;
             MyHitGrid.SwitchTurn = SwitchTurn;
             EnemyHitGrid.SwitchTurn = SwitchTurn;
             Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
             myShipGrid.Ships = new ObservableCollection<ShipViewModel>(Inject.Application.MySetShips);
-            Inject.Application.Server.CreateAndSendPacket(OpCodes.WhoStarts, MyName);
+            //Inject.Application.Server.CreateAndSendPacket(OpCodes.WhoStarts, MyName);
 
+            Inject.Application.SignalR.SendWhoStarts();
         }
 
         #endregion
@@ -89,6 +92,15 @@ namespace Battleships
         private void SwitchTurn()
         {
             MyTurn = !MyTurn;
+        }
+
+        #endregion
+
+        #region SignalR actions
+
+        private void ReceiveWhoStarts(bool start)
+        {
+            MyTurn = start;
         }
 
         #endregion

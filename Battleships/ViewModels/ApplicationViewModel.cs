@@ -13,6 +13,7 @@ namespace Battleships
         public ClientToServer Server { get; private set; } = new ClientToServer();
         public SignalRServer SignalR { get; private set; } = new SignalRServer();
         public List<ShipViewModel> MySetShips { get; set; }
+        public UserViewModel Opponent { get; internal set; }
 
         [ObservableProperty]
         private ApplicationPages currentPage = ApplicationPages.MainMenuPage;
