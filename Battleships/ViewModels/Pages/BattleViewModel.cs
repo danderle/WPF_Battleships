@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Battleships
 {
@@ -50,11 +51,14 @@ namespace Battleships
             Inject.Application.Server.DisconnectedClientAction = DisconnectedClientAction;
             Inject.Application.Server.GameoverAction = GameOverAction;
             Inject.Application.Server.WhoStartsAction = WhoStartsAction;
+            Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
 
             Inject.Application.SignalR.ReceiveWhoStartsAction = ReceiveWhoStarts;
+            Inject.Application.SignalR.ReceiveGameoverAction = ReceiveGameover;
+            Inject.Application.SignalR.ReceiveShotFiredAction = MyHitGrid.ReceiveShotFired;
+
             MyHitGrid.SwitchTurn = SwitchTurn;
             EnemyHitGrid.SwitchTurn = SwitchTurn;
-            Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
             myShipGrid.Ships = new ObservableCollection<ShipViewModel>(Inject.Application.MySetShips);
             //Inject.Application.Server.CreateAndSendPacket(OpCodes.WhoStarts, MyName);
 
@@ -98,6 +102,15 @@ namespace Battleships
 
         #region SignalR actions
 
+        private void ReceiveGameover(User winner)
+        {
+            GameOver = true;
+            if (winner.ConnectionId == Inject.Application.SignalR.ConnectionId)
+            {
+                Winner = true;
+            }
+        }
+
         private void ReceiveWhoStarts(bool start)
         {
             MyTurn = start;
@@ -108,7 +121,7 @@ namespace Battleships
         #region Command method
 
         [RelayCommand]
-        public void Continue()
+        public async Task Continue()
         {
             var user = new User()
             {
@@ -117,15 +130,11 @@ namespace Battleships
                 Starts = false
             };
 
-            string message = JsonSerializer.Serialize(user);
-            Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            //string message = JsonSerializer.Serialize(user);
+            //Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            await Inject.Application.SignalR.SendUserUpdate(user);
             Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
         }
-
-        #endregion
-
-        #region Methods
-
 
         #endregion
     }

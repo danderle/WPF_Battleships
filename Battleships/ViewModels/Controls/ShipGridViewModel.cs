@@ -28,7 +28,8 @@ public partial class ShipGridViewModel : ObservableObject
     public ShipGridViewModel()
 	{
 		Inject.Application.Server.ShipDestroyedAction = ShipDestroyed;
-		BindingOperations.EnableCollectionSynchronization(Ships, _lock);
+		Inject.Application.SignalR.ReceiveShipDestroyedAction = ReceiveShipDestroyed;
+        BindingOperations.EnableCollectionSynchronization(Ships, _lock);
     }
 
     #endregion
@@ -39,6 +40,18 @@ public partial class ShipGridViewModel : ObservableObject
     {
         var ship = JsonSerializer.Deserialize<ShipDestroyedMessage>(message);
         
+        lock (_lock)
+        {
+            Ships.Add(new ShipViewModel(ship));
+        }
+    }
+
+    #endregion
+
+    #region SignalR actions
+
+    private void ReceiveShipDestroyed(ShipDestroyedMessage ship)
+    {
         lock (_lock)
         {
             Ships.Add(new ShipViewModel(ship));

@@ -28,9 +28,13 @@ public class SignalRServer
     public Action<string> ReceiveChallengeAction { get; internal set; }
     public Action<bool> ReceiveChallengeAnswerAction { get; internal set; }
     public Action<User> ReceiveUserUpdateAction { get; internal set; }
-    public Action<List<User>> ReceiveUpdateUserListAction { get; internal set; }
+    public Action<List<User>> ReceiveUserListUpdateAction { get; internal set; }
     public Action<string> ReceiveFinishedSetupAction { get; internal set; }
     public Action<bool> ReceiveWhoStartsAction { get; internal set; }
+    public Action<User> ReceiveGameoverAction { get; internal set; }
+    public Action<ShotFiredMessage> ReceiveShotFiredAction { get; internal set; }
+    public Action<ShotFiredMessage> ReceiveShotConfirmationAction { get; internal set; }
+    public Action<ShipDestroyedMessage> ReceiveShipDestroyedAction { get; internal set; }
 
     #endregion
 
@@ -46,17 +50,21 @@ public class SignalRServer
         DefineHubReceiveMethods();
 
         await _hubConnection.StartAsync();
+        await SendUserListUpdate();
     }
 
     private void DefineHubReceiveMethods()
     {
         _hubConnection.On<User>("ReceiveNewUser", user => ReceiveNewUserAction?.Invoke(user));
-        _hubConnection.On<List<User>>("ReceiveUserList", list => ReceiveUpdateUserListAction?.Invoke(list));
+        _hubConnection.On<List<User>>("ReceiveUserListUpdate", list => ReceiveUserListUpdateAction?.Invoke(list));
         _hubConnection.On<string>("ReceiveChallenge", connectionId => ReceiveChallengeAction?.Invoke(connectionId));
         _hubConnection.On<User>("ReceiveUserUpdate", user => ReceiveUserUpdateAction?.Invoke(user));
         _hubConnection.On<bool>("ReceiveChallengeAnswer", answer => ReceiveChallengeAnswerAction?.Invoke(answer));
         _hubConnection.On<string>("ReceiveFinishedSetup", answer => ReceiveFinishedSetupAction?.Invoke(answer));
         _hubConnection.On<bool>("ReceiveWhoStarts", answer => ReceiveWhoStartsAction?.Invoke(answer));
+        _hubConnection.On<ShotFiredMessage>("ReceiveShotFiredAction", answer => ReceiveShotFiredAction?.Invoke(answer));
+        _hubConnection.On<ShotFiredMessage>("ReceiveShotConfirmation", answer => ReceiveShotConfirmationAction?.Invoke(answer));
+        _hubConnection.On<ShipDestroyedMessage>("ReceiveShipDestroyed", answer => ReceiveShipDestroyedAction?.Invoke(answer));
     }
 
     #endregion
@@ -110,6 +118,38 @@ public class SignalRServer
         if (_hubConnection != null)
         {
             await _hubConnection.SendAsync("SendWhoStarts", ConnectionId);
+        }
+    }
+
+    internal async Task SendUserListUpdate()
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendUserListUpdate", ConnectionId);
+        }
+    }
+
+    internal async Task SendShotConfirmation(ShotFiredMessage shot)
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendShotConfirmation", shot);
+        }
+    }
+
+    internal async Task SendShotFired(ShotFiredMessage shot)
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendShotFired", shot);
+        }
+    }
+
+    internal async Task SendShipDestroyed(ShipDestroyedMessage message)
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendShipDestroyed", message);
         }
     }
     #endregion

@@ -72,7 +72,7 @@ internal partial class MainMenuViewModel : ObservableObject
 
         Inject.Application.SignalR.ConnectToServer();
         Inject.Application.SignalR.ReceiveNewUserAction = NewUser;
-        Inject.Application.SignalR.ReceiveUpdateUserListAction = UpdateUserList;
+        Inject.Application.SignalR.ReceiveUserListUpdateAction = ReceiveUserListUpdate;
         Inject.Application.SignalR.ReceiveChallengeAction = ReceivedChallenge;
         Inject.Application.SignalR.ReceiveUserUpdateAction = ReceiveUserUpdate;
         Inject.Application.SignalR.ReceiveChallengeAnswerAction = ReceiveChallengeAnswer;
@@ -229,7 +229,8 @@ internal partial class MainMenuViewModel : ObservableObject
             var user = new UserViewModel()
             {
                 Name = newUser.Name,
-                ConnectionId = newUser.ConnectionId
+                ConnectionId = newUser.ConnectionId,
+                IsBusy = newUser.IsBusy,
             };
 
             lock (_lock)
@@ -244,15 +245,12 @@ internal partial class MainMenuViewModel : ObservableObject
             Inject.Application.MyName = Username;
         }
     }
-    private void UpdateUserList(List<User> list)
+    private void ReceiveUserListUpdate(List<User> list)
     {
-        for (int index = Users.Count - 1; index >= 0; index--)
+        Users.Clear();
+        foreach(var user in list)
         {
-            var user = list.FirstOrDefault(item => item.ConnectionId == Users[index].ConnectionId);
-            if (user == null)
-            {
-                Users.RemoveAt(index);
-            }
+            NewUser(user);
         }
     }
 

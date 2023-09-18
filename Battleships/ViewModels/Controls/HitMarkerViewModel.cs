@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
 
@@ -40,6 +41,7 @@ public partial class HitMarkerViewModel : ObservableObject
 	{
 		BindingOperations.EnableCollectionSynchronization(ShotsFired, _lock);
 		Inject.Application.Server.ShotConfirmationAction = ShotConfirmation;
+		Inject.Application.SignalR.ReceiveShotConfirmationAction = ReceiveShotConfirmation;
     }
 
 	#endregion
@@ -102,20 +104,76 @@ public partial class HitMarkerViewModel : ObservableObject
 		}
     }
 
+    #endregion
+
+    #region SignalR actions
+
+    private void ReceiveShotConfirmation(ShotFiredMessage shot)
+    {
+        if (shot.Hit)
+        {
+            ShotsFired.Last().Hit = true;
+        }
+        else
+        {
+            SwitchTurn?.Invoke();
+        }
+    }
+
+    public async Task ReceiveShotFired(ShotFiredMessage shot)
+    {
+        shot.Opponent = OpponentName;
+        foreach (var ship in _placedShips)
+        {
+            if (!ship.IsDestroyed)
+            {
+                var shotCoo = new Coordinate(shot.Xpos, shot.Ypos);
+                var hitCoo = ship.HitCoordinates.FirstOrDefault(item => item.Compare(shotCoo));
+                if (hitCoo != null)
+                {
+                    shot.Hit = true;
+                    ship.Hit();
+                    AddShotFired(shot);
+					await Inject.Application.SignalR.SendShotConfirmation(shot);
+
+                    if (ship.IsDestroyed)
+                    {
+                        _shipsDestroyed++;
+                        var message = new ShipDestroyedMessage(OpponentName, ship.ShipType, ship.Alignment, ship.Xpos, ship.Ypos);
+                        await Inject.Application.SignalR.SendShipDestroyed(message);
+
+                        _gameover = _placedShips.Count == _shipsDestroyed;
+                        if (_gameover)
+                        {
+                            message = JsonSerializer.Serialize(new GameOverMessage(OpponentName, MyName));
+                            Inject.Application.Server.CreateAndSendPacket(OpCodes.GameOver, message);
+                        }
+                    }
+
+                    return;
+                }
+            }
+        }
+
+        AddShotFired(shot);
+		await Inject.Application.SignalR.SendShotConfirmation(shot);
+        SwitchTurn?.Invoke();
+    }
+    
 
     #endregion
 
     #region Command methods
 
     [RelayCommand]
-	public void Fire(ShotFiredViewModel shot)
+	public async Task Fire(ShotFiredViewModel shot)
 	{
 		if (!ShotsFired.Any(item => item.Coordinate.Compare(shot.Coordinate)))
 		{
-			var shotFired = new ShotFiredMessage(OpponentName, shot.Coordinate.Xpos, shot.Coordinate.Ypos);
-			var message = JsonSerializer.Serialize(shotFired);
+			var shotFired = new ShotFiredMessage(
+				shot.Coordinate.Xpos, shot.Coordinate.Ypos, Inject.Application.Opponent.ConnectionId, Inject.Application.SignalR.ConnectionId);
 			ShotsFired.Add(shot);
-			Inject.Application.Server.CreateAndSendPacket(OpCodes.ShotFired, message);
+			await Inject.Application.SignalR.SendShotFired(shotFired);
 		}
 	}
 

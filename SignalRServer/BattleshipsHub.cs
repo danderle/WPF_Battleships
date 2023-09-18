@@ -9,7 +9,11 @@ public class BattleshipsHub : Hub
     {
         Server.AddUser(user);
         await Clients.All.SendAsync("ReceiveNewUser", user);
-        await Clients.Client(user.ConnectionId).SendAsync("ReceiveUserList", Server.Users);
+    }
+
+    public async Task SendUserListUpdate(string connectionId)
+    {
+        await Clients.Client(connectionId).SendAsync("ReceiveUserListUpdate", Server.Users);
     }
 
     public async Task SendChallenge(string opponentId, string challengerId)
@@ -37,5 +41,20 @@ public class BattleshipsHub : Hub
     public async Task SendWhoStarts(string senderId)
     {
         await Clients.Client(senderId).SendAsync("ReceiveWhoStarts", Server.WhoStarts(senderId));
+    }
+
+    public async Task SendShotConfirmation(ShotFiredMessage shot)
+    {
+        await Clients.Client(shot.AttackerId).SendAsync("ReceiveShotConfirmation", shot);
+    }
+
+    public async Task SendShotFired(ShotFiredMessage shot)
+    {
+        await Clients.Client(shot.OpponentId).SendAsync("ReceiveShotFired", shot);
+    }
+
+    public async Task SendShipDestroyed(ShipDestroyedMessage message)
+    {
+        await Clients.Client(message.AttackerId).SendAsync("ReceiveShipDestroyed", message);
     }
 }
