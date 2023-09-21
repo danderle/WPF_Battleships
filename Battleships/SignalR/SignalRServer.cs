@@ -31,10 +31,10 @@ public class SignalRServer
     public Action<List<User>> ReceiveUserListUpdateAction { get; internal set; }
     public Action<string> ReceiveFinishedSetupAction { get; internal set; }
     public Action<bool> ReceiveWhoStartsAction { get; internal set; }
-    public Action<User> ReceiveGameoverAction { get; internal set; }
     public Action<ShotFiredMessage> ReceiveShotFiredAction { get; internal set; }
     public Action<ShotFiredMessage> ReceiveShotConfirmationAction { get; internal set; }
     public Action<ShipDestroyedMessage> ReceiveShipDestroyedAction { get; internal set; }
+    public Action<GameOverMessage> ReceiveGameoverMessageAction { get; internal set; }
 
     #endregion
 
@@ -62,9 +62,10 @@ public class SignalRServer
         _hubConnection.On<bool>("ReceiveChallengeAnswer", answer => ReceiveChallengeAnswerAction?.Invoke(answer));
         _hubConnection.On<string>("ReceiveFinishedSetup", answer => ReceiveFinishedSetupAction?.Invoke(answer));
         _hubConnection.On<bool>("ReceiveWhoStarts", answer => ReceiveWhoStartsAction?.Invoke(answer));
-        _hubConnection.On<ShotFiredMessage>("ReceiveShotFiredAction", answer => ReceiveShotFiredAction?.Invoke(answer));
+        _hubConnection.On<ShotFiredMessage>("ReceiveShotFired", answer => ReceiveShotFiredAction?.Invoke(answer));
         _hubConnection.On<ShotFiredMessage>("ReceiveShotConfirmation", answer => ReceiveShotConfirmationAction?.Invoke(answer));
         _hubConnection.On<ShipDestroyedMessage>("ReceiveShipDestroyed", answer => ReceiveShipDestroyedAction?.Invoke(answer));
+        _hubConnection.On<GameOverMessage>("ReceiveGameoverMessage", answer => ReceiveGameoverMessageAction?.Invoke(answer));
     }
 
     #endregion
@@ -152,5 +153,14 @@ public class SignalRServer
             await _hubConnection.SendAsync("SendShipDestroyed", message);
         }
     }
+
+    internal async Task SendGameoverMessage(GameOverMessage message)
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.SendAsync("SendGameoverMessage", message);
+        }
+    }
+
     #endregion
 }

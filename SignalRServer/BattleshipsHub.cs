@@ -57,4 +57,10 @@ public class BattleshipsHub : Hub
     {
         await Clients.Client(message.AttackerId).SendAsync("ReceiveShipDestroyed", message);
     }
+
+    public async Task SendGameoverMessage(GameOverMessage message)
+    {
+        await Clients.Client(message.Winner).SendAsync("ReceiveGameoverMessage", message);
+        await Clients.Client(message.Loser).SendAsync("ReceiveGameoverMessage", message);
+    }
 }

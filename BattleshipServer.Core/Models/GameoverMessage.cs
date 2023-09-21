@@ -3,9 +3,8 @@
 public class GameOverMessage
 {
     public string Winner { get; set; }
-
     public string Loser { get; set; }
-
+    
     public GameOverMessage()
     {
     }

@@ -41,6 +41,7 @@ public partial class HitMarkerViewModel : ObservableObject
 	{
 		BindingOperations.EnableCollectionSynchronization(ShotsFired, _lock);
 		Inject.Application.Server.ShotConfirmationAction = ShotConfirmation;
+
 		Inject.Application.SignalR.ReceiveShotConfirmationAction = ReceiveShotConfirmation;
     }
 
@@ -120,7 +121,7 @@ public partial class HitMarkerViewModel : ObservableObject
         }
     }
 
-    public async Task ReceiveShotFired(ShotFiredMessage shot)
+    public async void ReceiveShotFired(ShotFiredMessage shot)
     {
         shot.Opponent = OpponentName;
         foreach (var ship in _placedShips)
@@ -145,8 +146,8 @@ public partial class HitMarkerViewModel : ObservableObject
                         _gameover = _placedShips.Count == _shipsDestroyed;
                         if (_gameover)
                         {
-                            message = JsonSerializer.Serialize(new GameOverMessage(OpponentName, MyName));
-                            Inject.Application.Server.CreateAndSendPacket(OpCodes.GameOver, message);
+                            var gameoverMessage = new GameOverMessage(Inject.Application.Opponent.ConnectionId, Inject.Application.SignalR.ConnectionId);
+							await Inject.Application.SignalR.SendGameoverMessage(gameoverMessage);
                         }
                     }
 

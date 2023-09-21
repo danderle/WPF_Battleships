@@ -54,7 +54,7 @@ namespace Battleships
             Inject.Application.Server.ShotFiredAction = MyHitGrid.ShotFired;
 
             Inject.Application.SignalR.ReceiveWhoStartsAction = ReceiveWhoStarts;
-            Inject.Application.SignalR.ReceiveGameoverAction = ReceiveGameover;
+            Inject.Application.SignalR.ReceiveGameoverMessageAction = ReceiveGameoverMessage;
             Inject.Application.SignalR.ReceiveShotFiredAction = MyHitGrid.ReceiveShotFired;
 
             MyHitGrid.SwitchTurn = SwitchTurn;
@@ -102,10 +102,10 @@ namespace Battleships
 
         #region SignalR actions
 
-        private void ReceiveGameover(User winner)
+        private void ReceiveGameoverMessage(GameOverMessage message)
         {
             GameOver = true;
-            if (winner.ConnectionId == Inject.Application.SignalR.ConnectionId)
+            if (message.Winner == Inject.Application.SignalR.ConnectionId)
             {
                 Winner = true;
             }
