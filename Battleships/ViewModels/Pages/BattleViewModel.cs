@@ -41,6 +41,7 @@ namespace Battleships
 
         public string MyName => Inject.Application.MyName;
         public string OpponentName => Inject.Application.OpponentName;
+        public UserViewModel Opponent => Inject.Application.Opponent;
 
         #endregion
 
@@ -56,6 +57,7 @@ namespace Battleships
             Inject.Application.SignalR.ReceiveWhoStartsAction = ReceiveWhoStarts;
             Inject.Application.SignalR.ReceiveGameoverMessageAction = ReceiveGameoverMessage;
             Inject.Application.SignalR.ReceiveShotFiredAction = MyHitGrid.ReceiveShotFired;
+            Inject.Application.SignalR.ReceiveUserDisconnectedAction = ReceiveUserDisconnected;
 
             MyHitGrid.SwitchTurn = SwitchTurn;
             EnemyHitGrid.SwitchTurn = SwitchTurn;
@@ -101,6 +103,13 @@ namespace Battleships
         #endregion
 
         #region SignalR actions
+        private void ReceiveUserDisconnected(string connectionId)
+        {
+            if (Opponent.ConnectionId == connectionId)
+            {
+                OpponentDisconnected = true;
+            }
+        }
 
         private void ReceiveGameoverMessage(GameOverMessage message)
         {

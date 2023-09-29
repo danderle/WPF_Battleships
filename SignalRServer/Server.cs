@@ -70,4 +70,13 @@ public static class Server
         var user = FindUser(senderId);
         return user.Starts;
     }
+
+    internal static void RemoveUser(string connectionId)
+    {
+        var found = Users.FirstOrDefault(item => item.ConnectionId == connectionId);
+        if(found != null)
+        {
+            Users.Remove(found);
+        }
+    }
 }

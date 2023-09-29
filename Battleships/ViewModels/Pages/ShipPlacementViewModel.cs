@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Battleships
@@ -41,6 +40,8 @@ namespace Battleships
             Inject.Application.Server.FinishedSetupAction = FinishedSetup;
 
             Inject.Application.SignalR.ReceiveFinishedSetupAction = ReceiveFinishedSetup;
+            Inject.Application.SignalR.ReceiveUserDisconnectedAction = ReceiveUserDisconnected;
+
             ShipGrid.Ships = new System.Collections.ObjectModel.ObservableCollection<ShipViewModel>()
             {
                 new ShipViewModel(ShipTypes.Carrier, 0),
@@ -76,6 +77,14 @@ namespace Battleships
 
         #region SignalR actions
 
+        private void ReceiveUserDisconnected(string connectionId)
+        {
+            if (Opponent.ConnectionId == connectionId)
+            {
+                OpponentDisconnected = true;
+            }
+        }
+
         public void ReceiveFinishedSetup(string message)
         {
             _opponentFinished = true;
@@ -90,7 +99,7 @@ namespace Battleships
         #region Command method
 
         [RelayCommand]
-        public void Continue()
+        public async Task Continue()
         {
             var user = new User()
             {
@@ -99,10 +108,12 @@ namespace Battleships
                 Starts = false
             };
 
-            string message = JsonSerializer.Serialize(user);
-            Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            //string message = JsonSerializer.Serialize(user);
+            //Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+            await Inject.Application.SignalR.SendUserUpdate(user);
             Inject.Application.CurrentPage = ApplicationPages.MainMenuPage;
         }
+
         [RelayCommand]
         public async Task StartGame()
         {

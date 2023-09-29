@@ -5,6 +5,12 @@ namespace SignalRServer;
 
 public class BattleshipsHub : Hub
 {
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        Server.RemoveUser(Context.ConnectionId);
+        await Clients.All.SendAsync("ReceiveUserDisconnected", Context.ConnectionId);
+        await base.OnDisconnectedAsync(exception);
+    }
     public async Task SendNewUser(User user)
     {
         Server.AddUser(user);

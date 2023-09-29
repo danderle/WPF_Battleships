@@ -23,7 +23,7 @@ public class SignalRServer
 
     #region Actions
 
-    public Action<string> DisconnectedClientAction { get; internal set; }
+    public Action<string> ReceiveUserDisconnectedAction { get; internal set; }
     public Action<User> ReceiveNewUserAction { get; internal set; }
     public Action<string> ReceiveChallengeAction { get; internal set; }
     public Action<bool> ReceiveChallengeAnswerAction { get; internal set; }
@@ -66,6 +66,7 @@ public class SignalRServer
         _hubConnection.On<ShotFiredMessage>("ReceiveShotConfirmation", answer => ReceiveShotConfirmationAction?.Invoke(answer));
         _hubConnection.On<ShipDestroyedMessage>("ReceiveShipDestroyed", answer => ReceiveShipDestroyedAction?.Invoke(answer));
         _hubConnection.On<GameOverMessage>("ReceiveGameoverMessage", answer => ReceiveGameoverMessageAction?.Invoke(answer));
+        _hubConnection.On<string>("ReceiveUserDisconnected", connectionId => ReceiveUserDisconnectedAction?.Invoke(connectionId));
     }
 
     #endregion

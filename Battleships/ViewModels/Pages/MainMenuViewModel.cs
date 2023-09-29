@@ -77,7 +77,7 @@ internal partial class MainMenuViewModel : ObservableObject
         Inject.Application.SignalR.ReceiveUserUpdateAction = ReceiveUserUpdate;
         Inject.Application.SignalR.ReceiveChallengeAnswerAction = ReceiveChallengeAnswer;
 
-        Inject.Application.SignalR.DisconnectedClientAction = DisconnectedClientAction;
+        Inject.Application.SignalR.ReceiveUserDisconnectedAction = ReceiveUserDisconnected;
     }
 
     #endregion
@@ -177,6 +177,21 @@ internal partial class MainMenuViewModel : ObservableObject
 
     #region SignalR actions
 
+    private void ReceiveUserDisconnected(string connectionId)
+    {
+        var user = Users.FirstOrDefault(item => item.ConnectionId == connectionId);
+        if (user != null)
+        {
+            Users.Remove(user);
+        }
+
+        if (Opponent != null && Opponent.ConnectionId == connectionId)
+        {
+            OpponentName = Opponent.Name;
+            OpponentDisconnected = true;
+        }
+    }
+
     private async void ReceiveChallengeAnswer(bool answer)
     {
         if (answer)
@@ -259,7 +274,7 @@ internal partial class MainMenuViewModel : ObservableObject
     #region Command methods
 
     [RelayCommand]
-    public void Continue()
+    public async Task Continue()
     {
         var user = new User()
 		{
@@ -268,8 +283,9 @@ internal partial class MainMenuViewModel : ObservableObject
             Starts = false
         };
 
-        string message = JsonSerializer.Serialize(user);
-        Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+        //string message = JsonSerializer.Serialize(user);
+        //Inject.Application.Server.CreateAndSendPacket(OpCodes.Busy, message);
+        await Inject.Application.SignalR.SendUserUpdate(user);
 		Challenged = false;
 		OpenChallenge = false;
 		OpponentDisconnected = false;
@@ -370,11 +386,12 @@ internal partial class MainMenuViewModel : ObservableObject
         Inject.Application.CurrentPage = ApplicationPages.ShipPlacementPage;
     }
 
-    internal void UpdateUserList()
+    internal async Task UpdateUserList()
     {
+        await Inject.Application.SignalR.SendUserListUpdate();
 		if (!string.IsNullOrEmpty(Username))
 		{
-			Inject.Application.Server.CreateAndSendPacket(OpCodes.UpdateUserList, Username);
+			//Inject.Application.Server.CreateAndSendPacket(OpCodes.UpdateUserList, Username);
 		}
     }
     #endregion
